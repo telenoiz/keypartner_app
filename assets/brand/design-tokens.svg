@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 620" width="800" height="620" role="img" aria-label="Design tokens: цветовая палитра и типографика keypartner_app">
+  <title>Design Tokens — keypartner_app</title>
+  <rect width="800" height="620" fill="#FFFFFF"/>
+
+  <!-- Заголовок -->
+  <text x="40" y="44" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827">Design Tokens — keypartner_app</text>
+  <line x1="40" y1="56" x2="760" y2="56" stroke="#D1D5DB" stroke-width="1"/>
+
+  <!-- РАЗДЕЛ: Цветовая палитра -->
+  <text x="40" y="88" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#4B5563" letter-spacing="1">ЦВЕТОВАЯ ПАЛИТРА</text>
+
+  <!-- Primary -->
+  <rect x="40" y="100" width="64" height="64" rx="8" fill="#2563EB"/>
+  <text x="40" y="178" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Primary</text>
+  <text x="40" y="192" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#2563EB</text>
+
+  <!-- Primary Dark -->
+  <rect x="120" y="100" width="64" height="64" rx="8" fill="#1D4ED8"/>
+  <text x="120" y="178" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Primary Dark</text>
+  <text x="120" y="192" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#1D4ED8</text>
+
+  <!-- Primary Light -->
+  <rect x="200" y="100" width="64" height="64" rx="8" fill="#DBEAFE" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="200" y="178" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Primary Light</text>
+  <text x="200" y="192" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#DBEAFE</text>
+
+  <!-- Success -->
+  <rect x="280" y="100" width="64" height="64" rx="8" fill="#16A34A"/>
+  <text x="280" y="178" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Success</text>
+  <text x="280" y="192" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#16A34A</text>
+
+  <!-- Warning -->
+  <rect x="360" y="100" width="64" height="64" rx="8" fill="#D97706"/>
+  <text x="360" y="178" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Warning</text>
+  <text x="360" y="192" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#D97706</text>
+
+  <!-- Danger -->
+  <rect x="440" y="100" width="64" height="64" rx="8" fill="#DC2626"/>
+  <text x="440" y="178" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Danger</text>
+  <text x="440" y="192" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#DC2626</text>
+
+  <!-- Neutral 900 -->
+  <rect x="520" y="100" width="64" height="64" rx="8" fill="#111827"/>
+  <text x="520" y="178" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Neutral 900</text>
+  <text x="520" y="192" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#111827</text>
+
+  <!-- Neutral 600 -->
+  <rect x="600" y="100" width="64" height="64" rx="8" fill="#4B5563"/>
+  <text x="600" y="178" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Neutral 600</text>
+  <text x="600" y="192" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#4B5563</text>
+
+  <!-- Neutral 300 -->
+  <rect x="40" y="210" width="64" height="64" rx="8" fill="#D1D5DB" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="40" y="288" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Neutral 300</text>
+  <text x="40" y="302" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#D1D5DB</text>
+
+  <!-- Neutral 100 -->
+  <rect x="120" y="210" width="64" height="64" rx="8" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="120" y="288" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">Neutral 100</text>
+  <text x="120" y="302" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#F3F4F6</text>
+
+  <!-- White -->
+  <rect x="200" y="210" width="64" height="64" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+  <text x="200" y="288" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#111827">White</text>
+  <text x="200" y="302" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563">#FFFFFF</text>
+
+  <!-- СТАТУСЫ ЗАЯВОК -->
+  <text x="320" y="228" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563" letter-spacing="0.5">СТАТУСЫ ЗАЯВОК</text>
+
+  <!-- Новая -->
+  <rect x="320" y="238" width="90" height="26" rx="4" fill="#DBEAFE"/>
+  <text x="365" y="255" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#1D4ED8" text-anchor="middle">Новая</text>
+
+  <!-- В работе -->
+  <rect x="420" y="238" width="90" height="26" rx="4" fill="#FEF3C7"/>
+  <text x="465" y="255" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#92400E" text-anchor="middle">В работе</text>
+
+  <!-- Ожидает ответа -->
+  <rect x="320" y="274" width="90" height="26" rx="4" fill="#EDE9FE"/>
+  <text x="365" y="291" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#5B21B6" text-anchor="middle">Ожидает</text>
+
+  <!-- Выполнена -->
+  <rect x="420" y="274" width="90" height="26" rx="4" fill="#DCFCE7"/>
+  <text x="465" y="291" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#166534" text-anchor="middle">Выполнена</text>
+
+  <!-- Отклонена -->
+  <rect x="320" y="310" width="90" height="26" rx="4" fill="#FEE2E2"/>
+  <text x="365" y="327" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" fill="#991B1B" text-anchor="middle">Отклонена</text>
+
+  <!-- Разделитель -->
+  <line x1="40" y1="360" x2="760" y2="360" stroke="#D1D5DB" stroke-width="1"/>
+
+  <!-- РАЗДЕЛ: Типографика -->
+  <text x="40" y="390" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#4B5563" letter-spacing="1">ТИПОГРАФИКА — INTER</text>
+
+  <!-- Display 30px/700 -->
+  <text x="40" y="430" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" fill="#111827">Display — 30px / 700</text>
+  <text x="700" y="430" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563" text-anchor="end">--text-display</text>
+
+  <!-- H2 24px/600 -->
+  <text x="40" y="464" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600" fill="#111827">H2 — 24px / 600</text>
+  <text x="700" y="464" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563" text-anchor="end">--text-h2</text>
+
+  <!-- H3 20px/600 -->
+  <text x="40" y="494" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600" fill="#111827">H3 — 20px / 600</text>
+  <text x="700" y="494" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563" text-anchor="end">--text-h3</text>
+
+  <!-- H4 16px/600 -->
+  <text x="40" y="520" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="600" fill="#111827">H4 — 16px / 600</text>
+  <text x="700" y="520" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563" text-anchor="end">--text-h4</text>
+
+  <!-- Body 14px/400 -->
+  <text x="40" y="544" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#111827">Body — 14px / 400 — основной текст интерфейса</text>
+  <text x="700" y="544" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563" text-anchor="end">--text-body</text>
+
+  <!-- Small 12px/400 -->
+  <text x="40" y="565" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#4B5563">Small — 12px / 400 — подписи, мета-информация</text>
+  <text x="700" y="565" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563" text-anchor="end">--text-small</text>
+
+  <!-- Caption 11px/500 -->
+  <rect x="40" y="575" width="80" height="20" rx="4" fill="#DBEAFE"/>
+  <text x="80" y="589" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="500" fill="#1D4ED8" text-anchor="middle">Caption 11px</text>
+  <text x="700" y="589" font-family="Inter, Arial, sans-serif" font-size="10" fill="#4B5563" text-anchor="end">--text-caption / 500</text>
+
+  <!-- Footer -->
+  <text x="40" y="614" font-family="Inter, Arial, sans-serif" font-size="10" fill="#9CA3AF">keypartner_app · ВКР-024 · 2026</text>
+</svg>
