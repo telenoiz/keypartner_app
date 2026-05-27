@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет — Key Partner IT{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Личный кабинет</h1>
+  <p class="page-subtitle">
+    Добро пожаловать, {{ user.username }}.
+    {% if user.is_admin %}Роль: Администратор.
+    {% elif user.is_manager %}Роль: Менеджер.
+    {% else %}Роль: Клиент.
+    {% endif %}
+  </p>
+</div>
+
+{# Список заявок клиента, статусы, пагинация — ВКР-037 #}
+<p style="color: var(--color-neutral-600); font-size: var(--text-body);">
+  Дашборд в разработке — <strong>ВКР-037</strong>.
+</p>
+{% endblock %}

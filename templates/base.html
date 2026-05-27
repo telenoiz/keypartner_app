@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block meta_description %}Веб-сервис централизованного управления заявками — ООО «Ки Партнер ИТ»{% endblock %}">
+
+  <title>{% block title %}Key Partner IT{% endblock %}</title>
+
+  <!-- Inter — Google Fonts (docs/2.1_Color_Typography.md) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  {% load static %}
+
+  <!-- Основная тема -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <!-- Тема для слабовидящих (ГОСТ Р 52872-2012) — отключена по умолчанию -->
+  <link rel="stylesheet" href="{% static 'css/accessible.css' %}" id="accessible-css">
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+  <!-- Пропуск навигации (доступность) -->
+  <a href="#main-content" class="skip-link">Перейти к содержимому</a>
+
+  <!-- ─── Шапка ──────────────────────────────────────────────────────── -->
+  <header class="site-header" role="banner">
+    <div class="container">
+
+      <!-- Логотип -->
+      <a href="{% url 'core:home' %}" class="site-logo" aria-label="Key Partner IT — на главную">
+        <span class="logo-text">Key Partner IT</span>
+      </a>
+
+      <!-- Основная навигация -->
+      <nav class="site-nav" aria-label="Основная навигация">
+        <ul class="nav-list">
+          <li>
+            <a href="{% url 'core:home' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'home' %}nav-link--active{% endif %}"
+               {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
+              Главная
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:contacts' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'contacts' %}nav-link--active{% endif %}"
+               {% if request.resolver_match.url_name == 'contacts' %}aria-current="page"{% endif %}>
+              Контакты
+            </a>
+          </li>
+          {% if user.is_authenticated %}
+          <li>
+            <a href="{% url 'core:dashboard' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}nav-link--active{% endif %}"
+               {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}>
+              Личный кабинет
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+
+      <!-- Действия: доступность + авторизация -->
+      <div class="site-actions">
+
+        <!-- Переключатель темы для слабовидящих -->
+        <button class="btn-accessible"
+                id="btn-accessible"
+                aria-label="Версия для слабовидящих"
+                aria-pressed="false"
+                title="Версия для слабовидящих (ГОСТ Р 52872-2012)">
+          👁
+        </button>
+
+        <!-- Авторизация -->
+        {% if user.is_authenticated %}
+          <div class="auth-menu">
+            <span class="auth-username" aria-label="Вы вошли как {{ user.username }}">
+              {{ user.username }}
+            </span>
+            <form method="post" action="{% url 'core:logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline">Выйти</button>
+            </form>
+          </div>
+        {% else %}
+          <div class="auth-links">
+            <a href="{% url 'core:login' %}" class="btn btn-outline">Войти</a>
+            <a href="{% url 'core:register' %}" class="btn btn-primary">Регистрация</a>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── Django messages ────────────────────────────────────────────── -->
+  {% if messages %}
+  <div class="messages-container" role="alert" aria-live="polite" aria-atomic="false">
+    <div class="container">
+      {% for message in messages %}
+      <div class="alert alert--{{ message.tags }}">
+        <span>{{ message }}</span>
+        <button class="alert-close"
+                aria-label="Закрыть сообщение"
+                onclick="this.parentElement.remove()">
+          &times;
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ─── Основной контент ───────────────────────────────────────────── -->
+  <main class="site-main" id="main-content" role="main">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- ─── Подвал ────────────────────────────────────────────────────── -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <p class="footer-copy">
+        &copy; {% now "Y" %} ООО «Ки Партнер ИТ». Все права защищены.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ─── Скрипт переключателя темы ─────────────────────────────────── -->
+  <script>
+  (function () {
+    var STORAGE_KEY = 'kp_accessible_theme';
+    var body = document.body;
+    var btn  = document.getElementById('btn-accessible');
+
+    function setAccessible(enabled) {
+      body.classList.toggle('accessible', enabled);
+      btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+      try { localStorage.setItem(STORAGE_KEY, enabled ? '1' : '0'); } catch (e) {}
+    }
+
+    // Восстановить при загрузке
+    var saved;
+    try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+    if (saved === '1') {
+      setAccessible(true);
+    }
+
+    btn.addEventListener('click', function () {
+      setAccessible(!body.classList.contains('accessible'));
+    });
+  }());
+  </script>
+
+  {% block extra_js %}{% endblock %}
+
+</body>
+</html>

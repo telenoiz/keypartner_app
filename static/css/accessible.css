@@ -1,0 +1,227 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Key Partner IT — тема для слабовидящих
+   Стандарт: ГОСТ Р 52872-2012 «Интернет-ресурсы. Требования доступности
+             для инвалидов по зрению»
+   Активация: кнопка «👁» в шапке добавляет class="accessible" на <body>.
+   Принцип: полностью переопределяет CSS-переменные и усиливает контраст
+            без изменения HTML-структуры.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Переопределение токенов ───────────────────────────────────────────── */
+body.accessible {
+  /* Высококонтрастная палитра: чёрный фон + жёлтый/белый текст */
+  --color-primary:        #FFD700;
+  --color-primary-dark:   #FFC200;
+  --color-primary-light:  #1A1A00;
+  --color-success:        #00DD77;
+  --color-warning:        #FFD700;
+  --color-danger:         #FF6B6B;
+
+  --color-neutral-900:    #FFFFFF;
+  --color-neutral-600:    #E0E0E0;
+  --color-neutral-300:    #555555;
+  --color-neutral-100:    #1A1A1A;
+  --color-white:          #000000;   /* «белый» фон становится чёрным */
+
+  /* Увеличенная типографика (ГОСТ: базовый размер ≥ 16px) */
+  --text-display:  38px;
+  --text-h2:       30px;
+  --text-h3:       26px;
+  --text-h4:       20px;
+  --text-body:     18px;
+  --text-small:    16px;
+  --text-caption:  14px;
+}
+
+/* ─── Body ──────────────────────────────────────────────────────────────── */
+body.accessible {
+  background-color: #000000;
+  color: #FFFFFF;
+  line-height: 1.8;
+  letter-spacing: 0.025em;
+}
+
+/* ─── Ссылки ────────────────────────────────────────────────────────────── */
+body.accessible a {
+  color: #FFD700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+body.accessible a:hover {
+  color: #000000;
+  background-color: #FFD700;
+  text-decoration: none;
+}
+
+body.accessible a:focus-visible {
+  outline: 3px solid #FFD700;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ─── Заголовки ─────────────────────────────────────────────────────────── */
+body.accessible h1,
+body.accessible h2,
+body.accessible h3,
+body.accessible h4,
+body.accessible h5,
+body.accessible h6 {
+  color: #FFD700;
+  font-weight: 700;
+}
+
+/* ─── Шапка ─────────────────────────────────────────────────────────────── */
+body.accessible .site-header {
+  background: #111111;
+  border-bottom: 2px solid #FFD700;
+  box-shadow: none;
+}
+
+body.accessible .logo-text {
+  color: #FFD700;
+}
+
+body.accessible .nav-link {
+  color: #E0E0E0;
+  font-weight: 600;
+}
+
+body.accessible .nav-link:hover {
+  background: #FFD700;
+  color: #000000;
+  text-decoration: none;
+}
+
+body.accessible .nav-link--active {
+  color: #FFD700;
+  background: #1A1A00;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+body.accessible .auth-username {
+  color: #E0E0E0;
+}
+
+/* ─── Кнопки ────────────────────────────────────────────────────────────── */
+body.accessible .btn-primary {
+  background: #FFD700;
+  color: #000000;
+  border-color: #FFD700;
+  font-weight: 700;
+}
+
+body.accessible .btn-primary:hover {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #000000;
+}
+
+body.accessible .btn-outline {
+  color: #FFD700;
+  border-color: #FFD700;
+  background: transparent;
+}
+
+body.accessible .btn-outline:hover {
+  background: #FFD700;
+  color: #000000;
+  text-decoration: none;
+}
+
+/* Кнопка переключения темы — активное состояние */
+body.accessible .btn-accessible {
+  background: #FFD700;
+  border-color: #FFD700;
+  color: #000000;
+}
+
+/* ─── Сообщения (messages) ──────────────────────────────────────────────── */
+body.accessible .alert--success {
+  background: #003300;
+  color: #00DD77;
+  border-color: #00DD77;
+}
+
+body.accessible .alert--error,
+body.accessible .alert--danger {
+  background: #330000;
+  color: #FF6B6B;
+  border-color: #FF6B6B;
+}
+
+body.accessible .alert--warning {
+  background: #332200;
+  color: #FFD700;
+  border-color: #FFD700;
+}
+
+body.accessible .alert--info {
+  background: #001133;
+  color: #88BBFF;
+  border-color: #88BBFF;
+}
+
+/* ─── Формы ─────────────────────────────────────────────────────────────── */
+body.accessible .form-label {
+  color: #E0E0E0;
+  font-weight: 700;
+}
+
+body.accessible .form-input {
+  background: #111111;
+  color: #FFFFFF;
+  border-color: #666666;
+}
+
+body.accessible .form-input:focus {
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255,215,0,.3);
+}
+
+/* ─── Карточки ──────────────────────────────────────────────────────────── */
+body.accessible .card {
+  background: #111111;
+  border-color: #333333;
+  box-shadow: none;
+}
+
+/* ─── Подвал ────────────────────────────────────────────────────────────── */
+body.accessible .site-footer {
+  background: #111111;
+  border-top: 2px solid #333333;
+}
+
+body.accessible .footer-copy {
+  color: #E0E0E0;
+}
+
+/* ─── Page title ────────────────────────────────────────────────────────── */
+body.accessible .page-title {
+  color: #FFD700;
+}
+
+body.accessible .page-subtitle {
+  color: #E0E0E0;
+}
+
+/* ─── Бейджи статусов (высококонтрастные версии) ────────────────────────── */
+body.accessible .badge--new         { color: #88BBFF; background: #001133; }
+body.accessible .badge--in-progress { color: #FFD700; background: #332200; }
+body.accessible .badge--waiting     { color: #CC99FF; background: #220033; }
+body.accessible .badge--resolved    { color: #00DD77; background: #003300; }
+body.accessible .badge--cancelled   { color: #FF6B6B; background: #330000; }
+
+/* ─── Универсальный индикатор фокуса ────────────────────────────────────── */
+body.accessible *:focus-visible {
+  outline: 3px solid #FFD700 !important;
+  outline-offset: 3px !important;
+  border-radius: 2px;
+}
+
+/* ─── Декоративные фоны — убрать (ГОСТ: не должны отвлекать) ────────────── */
+body.accessible * {
+  background-image: none !important;
+  text-shadow: none !important;
+}
