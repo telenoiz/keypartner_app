@@ -1,9 +1,6 @@
 """
 View-функции приложения core.
 Требования: F01–F14 (1.4_Analiz_Trebovaniy_Polzovateley.md)
-
-Реализованы как заглушки — полная логика добавляется в ВКР-033–037.
-Каждый view уже содержит корректную защиту доступа.
 """
 
 from django.shortcuts import render, redirect
@@ -11,15 +8,41 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
+from .models import Service, News
+
+# ─── Константы ──────────────────────────────────────────────────────────────
+
 # Роль по умолчанию для самостоятельной регистрации (F01)
 ROLE_CLIENT = 'client'
+
+# Количество записей на главной странице (ВКР-033)
+HOME_SERVICES_COUNT = 3
+HOME_NEWS_COUNT     = 3
 
 
 # ─── Публичные страницы ──────────────────────────────────────────────────────
 
 def home_view(request):
-    """Главная страница — доступна всем (ВКР-033)."""
-    return render(request, 'core/home.html')
+    """
+    Главная страница — доступна всем.
+    Передаёт активные услуги и последние новости (ВКР-033).
+    Требования: F02 (точка входа для подачи заявки через контакты).
+    """
+    services = (
+        Service.objects
+        .filter(is_active=True)
+        .order_by('title')[:HOME_SERVICES_COUNT]
+    )
+    news = (
+        News.objects
+        .filter(published_at__isnull=False)
+        .order_by('-published_at')
+        .select_related('author')[:HOME_NEWS_COUNT]
+    )
+    return render(request, 'core/home.html', {
+        'services': services,
+        'news':     news,
+    })
 
 
 def contacts_view(request):

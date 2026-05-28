@@ -2,6 +2,25 @@
 
 ---
 
+## 🚀 Release 0.4 — Главная страница
+📅 28.05.2026
+
+### ✨ Added
+- `templates/core/home.html`: Hero-секция — заголовок, подзаголовок, адаптивный CTA по роли (аноним / авторизован)
+- `templates/core/home.html`: Блок преимуществ — 4 карточки с Heroicons, контент из TO BE диаграммы и анализа AS IS
+- `templates/core/home.html`: Блок услуг — выборка из БД (`Service.is_active=True`, лимит `HOME_SERVICES_COUNT`) с empty state
+- `core/views.py`: константы `HOME_SERVICES_COUNT = 3`, `HOME_NEWS_COUNT = 3`
+- `static/css/style.css`: компоненты `.btn-lg`, `.hero`, `.features-grid`, `.feature-card`, `.services-grid`, `.service-card`, `.empty-state`
+
+### 🔄 Changed
+- `core/views.py`: `home_view` теперь передаёт `services` и `news` в контекст шаблона
+
+### 🔐 Security & Permissions
+- Главная страница доступна всем ролям и анонимным пользователям
+- CTA адаптируется на уровне шаблона через `request.user.is_authenticated` — без обращений к бэкенду
+
+---
+
 ## 🚀 Release 0.3 — Маршруты и базовый шаблон
 📅 27.05.2026
 
