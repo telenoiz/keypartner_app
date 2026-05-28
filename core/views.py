@@ -8,7 +8,7 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
-from .models import Service, News
+from .models import Service, News, Project
 
 # ─── Константы ──────────────────────────────────────────────────────────────
 
@@ -18,6 +18,11 @@ ROLE_CLIENT = 'client'
 # Количество записей на главной странице (ВКР-033)
 HOME_SERVICES_COUNT = 3
 HOME_NEWS_COUNT     = 3
+
+# Лимиты страниц контента (ВКР-034)
+SERVICES_PER_PAGE  = 20
+NEWS_PER_PAGE      = 10
+PROJECTS_PER_PAGE  = 9   # кратно 3 — сетка 3-в-ряд
 
 
 # ─── Публичные страницы ──────────────────────────────────────────────────────
@@ -43,6 +48,48 @@ def home_view(request):
         'services': services,
         'news':     news,
     })
+
+
+def services_view(request):
+    """
+    Каталог услуг — полный список активных услуг, сгруппированных по категории.
+    Доступна всем. Требования: F02 (точка входа к услугам перед подачей заявки).
+    """
+    services = (
+        Service.objects
+        .filter(is_active=True)
+        .select_related('category')
+        .order_by('category__name', 'title')[:SERVICES_PER_PAGE]
+    )
+    return render(request, 'core/services.html', {'services': services})
+
+
+def news_view(request):
+    """
+    Лента новостей компании — только опубликованные записи.
+    Доступна всем.
+    """
+    news_items = (
+        News.objects
+        .filter(published_at__isnull=False)
+        .select_related('author')
+        .order_by('-published_at')[:NEWS_PER_PAGE]
+    )
+    return render(request, 'core/news.html', {'news_items': news_items})
+
+
+def projects_view(request):
+    """
+    Публичное портфолио — завершённые и закрытые заявки.
+    Личные данные клиента не раскрываются (ВКР-034).
+    """
+    projects = (
+        Project.objects
+        .filter(status__in=Project.PORTFOLIO_STATUSES)
+        .select_related('service', 'service__category')
+        .order_by('-created_at')[:PROJECTS_PER_PAGE]
+    )
+    return render(request, 'core/projects.html', {'projects': projects})
 
 
 def contacts_view(request):

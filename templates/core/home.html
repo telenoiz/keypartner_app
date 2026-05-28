@@ -145,9 +145,14 @@
   <div class="container">
 
     <div class="section-header">
-      <h2 class="section-title" id="services-title">Наши услуги</h2>
+      <div>
+        <h2 class="section-title" id="services-title">Наши услуги</h2>
+        {% if services %}
+          <p class="section-subtitle">Подайте заявку по любому направлению</p>
+        {% endif %}
+      </div>
       {% if services %}
-        <p class="section-subtitle">Подайте заявку по любому направлению</p>
+        <a href="{% url 'core:services' %}" class="btn btn-outline">Все услуги →</a>
       {% endif %}
     </div>
 

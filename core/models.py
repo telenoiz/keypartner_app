@@ -174,6 +174,9 @@ class Project(models.Model):
         (STATUS_CANCELLED,   'Отменена'),
     ]
 
+    # Статусы заявок, показываемых в публичном портфолио (ВКР-034)
+    PORTFOLIO_STATUSES = [STATUS_RESOLVED, STATUS_CLOSED]
+
     user        = models.ForeignKey(
                       User, on_delete=models.RESTRICT,
                       related_name='tickets', verbose_name='Клиент'

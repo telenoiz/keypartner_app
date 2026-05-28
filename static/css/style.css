@@ -14,6 +14,18 @@
   --color-warning:        #D97706;
   --color-danger:         #DC2626;
 
+  /* Семантические статусы заявок — текст / фон (2.1_Color_Typography.md) */
+  --badge-new-text:        #1D4ED8;
+  --badge-new-bg:          #DBEAFE;
+  --badge-in-progress-text:#92400E;
+  --badge-in-progress-bg:  #FEF3C7;
+  --badge-resolved-text:   #166534;
+  --badge-resolved-bg:     #DCFCE7;
+  --badge-closed-text:     #1D4ED8;
+  --badge-closed-bg:       #DBEAFE;
+  --badge-cancelled-text:  #991B1B;
+  --badge-cancelled-bg:    #FEE2E2;
+
   --color-neutral-900:    #111827;
   --color-neutral-600:    #4B5563;
   --color-neutral-300:    #D1D5DB;
@@ -609,4 +621,167 @@ button { font-family: var(--font-base); }
   color: var(--color-neutral-600);
   line-height: 1.6;
   margin-bottom: var(--space-2);
+}
+
+/* ─── Page hero (ВКР-034) — внутренние страницы ────────────────────────── */
+.page-hero {
+  padding: var(--space-10) 0 var(--space-8);
+  border-bottom: 1px solid var(--color-neutral-300);
+  margin-bottom: var(--space-8);
+}
+
+.page-hero__title {
+  font-size: var(--text-display);
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  line-height: 1.2;
+  margin-bottom: var(--space-3);
+}
+
+.page-hero__subtitle {
+  font-size: var(--text-h3);
+  color: var(--color-neutral-600);
+  line-height: 1.5;
+}
+
+/* ─── News grid & card (ВКР-034) ────────────────────────────────────────── */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.news-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.news-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.news-card__date {
+  font-size: var(--text-small);
+  color: var(--color-neutral-600);
+  font-weight: 500;
+}
+
+.news-card__title {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  line-height: 1.4;
+}
+
+.news-card__text {
+  font-size: var(--text-body);
+  color: var(--color-neutral-600);
+  line-height: 1.6;
+  flex: 1;
+}
+
+/* ─── Projects grid & card (ВКР-034) ────────────────────────────────────── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-6);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.project-card__category {
+  font-size: var(--text-caption);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.project-card__title {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  line-height: 1.4;
+}
+
+.project-card__service {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-small);
+  color: var(--color-neutral-600);
+}
+
+.project-card__text {
+  font-size: var(--text-body);
+  color: var(--color-neutral-600);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.project-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-neutral-300);
+}
+
+.project-card__date {
+  font-size: var(--text-small);
+  color: var(--color-neutral-600);
+}
+
+/* ─── Status badges (ВКР-034) ───────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.badge--resolved {
+  color: var(--badge-resolved-text);
+  background-color: var(--badge-resolved-bg);
+}
+
+.badge--closed {
+  color: var(--badge-closed-text);
+  background-color: var(--badge-closed-bg);
+}
+
+.badge--new {
+  color: var(--badge-new-text);
+  background-color: var(--badge-new-bg);
+}
+
+.badge--in_progress {
+  color: var(--badge-in-progress-text);
+  background-color: var(--badge-in-progress-bg);
+}
+
+.badge--cancelled {
+  color: var(--badge-cancelled-text);
+  background-color: var(--badge-cancelled-bg);
 }

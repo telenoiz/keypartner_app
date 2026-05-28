@@ -47,6 +47,27 @@
             </a>
           </li>
           <li>
+            <a href="{% url 'core:services' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'services' %}nav-link--active{% endif %}"
+               {% if request.resolver_match.url_name == 'services' %}aria-current="page"{% endif %}>
+              Услуги
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:projects' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'projects' %}nav-link--active{% endif %}"
+               {% if request.resolver_match.url_name == 'projects' %}aria-current="page"{% endif %}>
+              Проекты
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:news' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'news' %}nav-link--active{% endif %}"
+               {% if request.resolver_match.url_name == 'news' %}aria-current="page"{% endif %}>
+              Новости
+            </a>
+          </li>
+          <li>
             <a href="{% url 'core:contacts' %}"
                class="nav-link {% if request.resolver_match.url_name == 'contacts' %}nav-link--active{% endif %}"
                {% if request.resolver_match.url_name == 'contacts' %}aria-current="page"{% endif %}>

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Новости — Key Partner IT{% endblock %}
+
+{% block meta_description %}Новости компании ООО «Ки Партнер ИТ» — обновления, события, анонсы{% endblock %}
+
+{% block content %}
+
+{# ══════════════════════════════════════════════════════════════════════════ #}
+{# Page hero                                                                   #}
+{# ══════════════════════════════════════════════════════════════════════════ #}
+<section class="page-hero" aria-labelledby="page-title">
+  <h1 class="page-hero__title" id="page-title">Новости</h1>
+  <p class="page-hero__subtitle">Обновления и события компании</p>
+</section>
+
+{# ══════════════════════════════════════════════════════════════════════════ #}
+{# Лента новостей                                                              #}
+{# ══════════════════════════════════════════════════════════════════════════ #}
+<section aria-labelledby="page-title">
+
+  {% if news_items %}
+    <ul class="news-grid" role="list">
+      {% for item in news_items %}
+        <li class="card news-card">
+          <div class="news-card__meta">
+            <time class="news-card__date" datetime="{{ item.published_at|date:'Y-m-d' }}">
+              {{ item.published_at|date:'d.m.Y' }}
+            </time>
+          </div>
+          <h2 class="news-card__title">{{ item.title }}</h2>
+          <p class="news-card__text">{{ item.content|truncatewords:30 }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+
+  {% else %}
+    <div class="empty-state" role="status">
+      {# Heroicons: newspaper outline 24px #}
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke-width="1.5" stroke="currentColor" width="40" height="40"
+           class="empty-state__icon" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/>
+      </svg>
+      <p class="empty-state__title">Новостей пока нет</p>
+      <p class="empty-state__text">Следите за обновлениями — мы скоро опубликуем первые материалы.</p>
+    </div>
+  {% endif %}
+
+</section>
+
+{% endblock %}

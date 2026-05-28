@@ -2,6 +2,28 @@
 
 ---
 
+## 🚀 Release 0.5 — Страницы контента
+📅 28.05.2026
+
+### ✨ Added
+- `templates/core/services.html`: каталог услуг — page-hero, сетка карточек с полным описанием, empty state с CTA
+- `templates/core/news.html`: лента новостей — карточки с датой и усечённым текстом, empty state
+- `templates/core/projects.html`: публичное портфолио — карточки завершённых кейсов с бейджем статуса; личные данные клиентов не раскрываются
+- `core/views.py`: `services_view`, `news_view`, `projects_view`; константы `SERVICES_PER_PAGE=20`, `NEWS_PER_PAGE=10`, `PROJECTS_PER_PAGE=9`
+- `core/models.py`: `Project.PORTFOLIO_STATUSES = [STATUS_RESOLVED, STATUS_CLOSED]`
+- `core/urls.py`: маршруты `/services/`, `/news/`, `/projects/`
+- `static/css/style.css`: переменные `--badge-*` в `:root`; компоненты `.page-hero`, `.news-grid`, `.news-card`, `.projects-grid`, `.project-card`, `.badge`, `.badge--{status}`
+
+### 🔄 Changed
+- `templates/base.html`: навигация расширена — «Услуги», «Проекты», «Новости» с `aria-current`
+- `templates/core/home.html`: добавлен CTA «Все услуги →» в секцию услуг
+
+### 🔐 Security & Permissions
+- Все три страницы доступны анонимным пользователям и всем ролям
+- Портфолио выводит только `title`, `service.title`, `status` — поля `user` и `manager` не раскрываются
+
+---
+
 ## 🚀 Release 0.4 — Главная страница
 📅 28.05.2026
 

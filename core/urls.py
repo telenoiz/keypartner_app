@@ -12,6 +12,9 @@ app_name = 'core'
 urlpatterns = [
     # Публичные страницы
     path('',           views.home_view,      name='home'),
+    path('services/',  views.services_view,  name='services'),
+    path('news/',      views.news_view,      name='news'),
+    path('projects/',  views.projects_view,  name='projects'),
     path('contacts/',  views.contacts_view,  name='contacts'),
 
     # Аутентификация (F01)
