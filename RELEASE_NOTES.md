@@ -2,6 +2,28 @@
 
 ---
 
+## 🚀 Release 0.7 — Аутентификация: логин, регистрация, 404
+📅 29.05.2026
+
+### ✨ Added
+- `core/forms.py`: `LoginForm` — authenticate() в clean(), поддержка `?next=`; `RegisterForm(ModelForm)` — валидация username/email уникальности, password min 8 симв., совпадение паролей
+- `templates/core/login.html`: auth-card с формой входа, non_field_errors, autofocus, next-hidden
+- `templates/core/register.html`: auth-card--wide с 2-col layout, все поля User кроме role
+- `templates/404.html`: страница 404 с кодом, заголовком и кнопкой «На главную»
+- `static/css/style.css`: `.auth-card`, `.auth-card--wide`, `.auth-wrapper`, `.btn--full`, `.error-page`, `.error-page__code`
+
+### 🔄 Changed
+- `core/views.py`: `login_view` — GET+POST, authenticate, auth_login, redirect to ?next; `register_view` — GET+POST, Role.objects.get(name=ROLE_CLIENT), auto-login; `handler404_view` добавлен
+- `keypartner/urls.py`: `handler404 = 'core.views.handler404_view'`
+
+### 🔐 Security & Permissions
+- Аутентификация через Django `authenticate()` — пароль никогда не хранится в форме
+- Роль `client` присваивается явно через `Role.objects.get(name=ROLE_CLIENT)`, а не через дефолт FK
+- `{% csrf_token %}` в обеих формах
+- Авторизованные пользователи редиректятся с /login/ и /register/ на главную
+
+---
+
 ## 🚀 Release 0.6 — Контакты, форма обратной связи, хлебные крошки
 📅 29.05.2026
 

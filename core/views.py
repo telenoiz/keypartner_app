@@ -4,14 +4,14 @@ View-функции приложения core.
 """
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import logout as auth_logout, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.urls import reverse
 
-from .models import Service, News, Project
-from .forms import ContactMessageForm
+from .models import Service, News, Project, Role
+from .forms import ContactMessageForm, LoginForm, RegisterForm
 
 # ─── Константы ──────────────────────────────────────────────────────────────
 
@@ -25,6 +25,12 @@ HOME_NEWS_COUNT     = 3
 # Сообщение об успешной отправке обращения (ВКР-035)
 CONTACT_SUCCESS_MESSAGE = (
     'Ваше обращение принято. Мы свяжемся с вами в ближайшее время.'
+)
+
+# Сообщения аутентификации (ВКР-036)
+REGISTER_SUCCESS_MESSAGE = 'Добро пожаловать! Аккаунт успешно создан.'
+REGISTER_ROLE_NOT_FOUND  = (
+    'Не удалось назначить роль. Обратитесь к администратору.'
 )
 
 # Лимиты страниц контента (ВКР-034)
@@ -135,24 +141,55 @@ def contacts_view(request):
 
 def login_view(request):
     """
-    Форма входа — только для анонимных пользователей.
-    Авторизованных редиректит на главную.
-    Полная реализация (форма, валидация) — ВКР-036.
+    Форма входа (F01). Только для анонимных пользователей.
+    POST: authenticate() → login() → redirect to ?next= или LOGIN_REDIRECT_URL.
     """
     if request.user.is_authenticated:
         return redirect('core:home')
-    return render(request, 'core/login.html')
+
+    if request.method == 'POST':
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            auth_login(request, user)
+            next_url = request.POST.get('next') or request.GET.get('next') or 'core:home'
+            return redirect(next_url)
+    else:
+        form = LoginForm(request)
+
+    return render(request, 'core/login.html', {
+        'form': form,
+        'next': request.GET.get('next', ''),
+    })
 
 
 def register_view(request):
     """
-    Форма регистрации — только для анонимных пользователей.
-    При регистрации присваивается роль ROLE_CLIENT.
-    Полная реализация — ВКР-036.
+    Форма регистрации (F01). Только для анонимных пользователей.
+    Назначает роль ROLE_CLIENT, хэширует пароль, автоматически выполняет вход.
     """
     if request.user.is_authenticated:
         return redirect('core:home')
-    return render(request, 'core/register.html')
+
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            try:
+                role_client = Role.objects.get(name=ROLE_CLIENT)
+            except Role.DoesNotExist:
+                messages.error(request, REGISTER_ROLE_NOT_FOUND)
+                return render(request, 'core/register.html', {'form': form})
+
+            user = form.save(commit=False)
+            user.role = role_client
+            user.save()
+            auth_login(request, user)
+            messages.success(request, REGISTER_SUCCESS_MESSAGE)
+            return redirect('core:home')
+    else:
+        form = RegisterForm()
+
+    return render(request, 'core/register.html', {'form': form})
 
 
 @require_POST
@@ -175,3 +212,14 @@ def dashboard_view(request):
     Полная реализация (роль-зависимые представления) — ВКР-037.
     """
     return render(request, 'core/dashboard.html')
+
+
+# ─── Обработчики ошибок (ВКР-036) ───────────────────────────────────────────
+
+def handler404_view(request, exception=None):
+    """
+    Страница 404 — ресурс не найден.
+    Регистрируется в keypartner/urls.py как handler404.
+    Работает только при DEBUG=False.
+    """
+    return render(request, '404.html', status=404)

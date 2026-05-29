@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Страница не найдена — Key Partner IT{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item" aria-current="page">404</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<section class="error-page" aria-labelledby="error-title">
+  <div class="error-page__code" aria-hidden="true">404</div>
+  <h1 class="error-page__title" id="error-title">Страница не найдена</h1>
+  <p class="error-page__text">
+    Запрошенная страница не существует или была перемещена.
+  </p>
+  <a href="{% url 'core:home' %}" class="btn btn-primary">
+    Вернуться на главную
+  </a>
+</section>
+{% endblock %}

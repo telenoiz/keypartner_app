@@ -12,17 +12,140 @@
 {% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1 class="page-title">Регистрация</h1>
-  <p class="page-subtitle">Создайте аккаунт для подачи заявок и отслеживания их статуса.</p>
-</div>
+<div class="auth-wrapper">
+  <div class="auth-card auth-card--wide">
 
-{# Форма регистрации (роль client, валидация, хэш пароля) — ВКР-036 #}
-<p style="color: var(--color-neutral-600); font-size: var(--text-body);">
-  Форма в разработке — <strong>ВКР-036</strong>.
-</p>
-<p style="margin-top: 12px; font-size: var(--text-body);">
-  Уже есть аккаунт?
-  <a href="{% url 'core:login' %}">Войти</a>
-</p>
+    <div class="auth-card__header">
+      <h1 class="auth-card__title">Регистрация</h1>
+      <p class="auth-card__subtitle">Создайте аккаунт для подачи заявок и отслеживания их статуса.</p>
+    </div>
+
+    <form method="post" action="{% url 'core:register' %}" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="alert alert--danger" role="alert">
+        {% for error in form.non_field_errors %}<span>{{ error }}</span>{% endfor %}
+      </div>
+      {% endif %}
+
+      {# Имя + Фамилия #}
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.first_name.id_for_label }}">
+            {{ form.first_name.label }}
+          </label>
+          <input type="text"
+                 id="{{ form.first_name.id_for_label }}"
+                 name="{{ form.first_name.html_name }}"
+                 class="form-input{% if form.first_name.errors %} form-input--error{% endif %}"
+                 value="{{ form.first_name.value|default:'' }}"
+                 placeholder="{{ form.first_name.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.first_name.field.widget.attrs.autocomplete }}"
+                 autofocus>
+          {% if form.first_name.errors %}
+          <span class="form-error" role="alert">{{ form.first_name.errors.0 }}</span>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.last_name.id_for_label }}">
+            {{ form.last_name.label }}
+          </label>
+          <input type="text"
+                 id="{{ form.last_name.id_for_label }}"
+                 name="{{ form.last_name.html_name }}"
+                 class="form-input{% if form.last_name.errors %} form-input--error{% endif %}"
+                 value="{{ form.last_name.value|default:'' }}"
+                 placeholder="{{ form.last_name.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.last_name.field.widget.attrs.autocomplete }}">
+          {% if form.last_name.errors %}
+          <span class="form-error" role="alert">{{ form.last_name.errors.0 }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Логин + Email #}
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.username.id_for_label }}">
+            {{ form.username.label }}<span aria-hidden="true"> *</span>
+          </label>
+          <input type="text"
+                 id="{{ form.username.id_for_label }}"
+                 name="{{ form.username.html_name }}"
+                 class="form-input{% if form.username.errors %} form-input--error{% endif %}"
+                 value="{{ form.username.value|default:'' }}"
+                 placeholder="{{ form.username.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.username.field.widget.attrs.autocomplete }}"
+                 maxlength="{{ form.username.field.max_length }}"
+                 required aria-required="true"
+                 {% if form.username.errors %}aria-describedby="err-username"{% endif %}>
+          {% if form.username.errors %}
+          <span class="form-error" id="err-username" role="alert">{{ form.username.errors.0 }}</span>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.email.id_for_label }}">
+            {{ form.email.label }}<span aria-hidden="true"> *</span>
+          </label>
+          <input type="email"
+                 id="{{ form.email.id_for_label }}"
+                 name="{{ form.email.html_name }}"
+                 class="form-input{% if form.email.errors %} form-input--error{% endif %}"
+                 value="{{ form.email.value|default:'' }}"
+                 placeholder="{{ form.email.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.email.field.widget.attrs.autocomplete }}"
+                 required aria-required="true"
+                 {% if form.email.errors %}aria-describedby="err-email"{% endif %}>
+          {% if form.email.errors %}
+          <span class="form-error" id="err-email" role="alert">{{ form.email.errors.0 }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Пароль + Подтверждение #}
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.password1.id_for_label }}">
+            {{ form.password1.label }}<span aria-hidden="true"> *</span>
+          </label>
+          <input type="password"
+                 id="{{ form.password1.id_for_label }}"
+                 name="{{ form.password1.html_name }}"
+                 class="form-input{% if form.password1.errors %} form-input--error{% endif %}"
+                 placeholder="{{ form.password1.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.password1.field.widget.attrs.autocomplete }}"
+                 required aria-required="true"
+                 {% if form.password1.errors %}aria-describedby="err-pass1"{% endif %}>
+          {% if form.password1.errors %}
+          <span class="form-error" id="err-pass1" role="alert">{{ form.password1.errors.0 }}</span>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.password2.id_for_label }}">
+            {{ form.password2.label }}<span aria-hidden="true"> *</span>
+          </label>
+          <input type="password"
+                 id="{{ form.password2.id_for_label }}"
+                 name="{{ form.password2.html_name }}"
+                 class="form-input{% if form.password2.errors %} form-input--error{% endif %}"
+                 placeholder="{{ form.password2.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.password2.field.widget.attrs.autocomplete }}"
+                 required aria-required="true"
+                 {% if form.password2.errors %}aria-describedby="err-pass2"{% endif %}>
+          {% if form.password2.errors %}
+          <span class="form-error" id="err-pass2" role="alert">{{ form.password2.errors.0 }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn--full">Создать аккаунт</button>
+    </form>
+
+    <p class="auth-card__footer">
+      Уже есть аккаунт? <a href="{% url 'core:login' %}">Войти</a>
+    </p>
+
+  </div>
+</div>
 {% endblock %}

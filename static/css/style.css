@@ -394,6 +394,97 @@ button { font-family: var(--font-base); }
   box-shadow: var(--shadow-sm);
 }
 
+/* ─── Auth card (ВКР-036) ────────────────────────────────────────────────── */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-10) 0;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-white);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-card--wide {
+  max-width: 640px;
+}
+
+.auth-card__header {
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+.auth-card__title {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-1);
+}
+
+.auth-card__subtitle {
+  font-size: var(--text-body);
+  color: var(--color-neutral-600);
+}
+
+.auth-card__footer {
+  margin-top: var(--space-5);
+  text-align: center;
+  font-size: var(--text-body);
+  color: var(--color-neutral-600);
+}
+
+.auth-card__footer a {
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-card__footer a:hover {
+  text-decoration: underline;
+}
+
+.btn--full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ─── Error page 404 (ВКР-036) ───────────────────────────────────────────── */
+.error-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-10) 0 var(--space-16);
+  gap: var(--space-4);
+}
+
+.error-page__code {
+  font-size: 7rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-neutral-300);
+  letter-spacing: -0.04em;
+}
+
+.error-page__title {
+  font-size: var(--text-h2);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+}
+
+.error-page__text {
+  font-size: var(--text-body);
+  color: var(--color-neutral-600);
+  max-width: 36ch;
+}
+
 /* ─── Breadcrumbs (ТЗ §3: хлебные крошки на каждой странице) ───────────── */
 .breadcrumb {
   display: flex;
