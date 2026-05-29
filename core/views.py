@@ -7,8 +7,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.contrib import messages
+from django.urls import reverse
 
 from .models import Service, News, Project
+from .forms import ContactMessageForm
 
 # ─── Константы ──────────────────────────────────────────────────────────────
 
@@ -18,6 +21,11 @@ ROLE_CLIENT = 'client'
 # Количество записей на главной странице (ВКР-033)
 HOME_SERVICES_COUNT = 3
 HOME_NEWS_COUNT     = 3
+
+# Сообщение об успешной отправке обращения (ВКР-035)
+CONTACT_SUCCESS_MESSAGE = (
+    'Ваше обращение принято. Мы свяжемся с вами в ближайшее время.'
+)
 
 # Лимиты страниц контента (ВКР-034)
 SERVICES_PER_PAGE  = 20
@@ -93,8 +101,34 @@ def projects_view(request):
 
 
 def contacts_view(request):
-    """Страница контактов с формой обратной связи (ВКР-035)."""
-    return render(request, 'core/contacts.html')
+    """
+    Страница контактов с формой обратной связи (ВКР-035).
+    GET  — отображает форму (поля name/email предзаполнены для авторизованных).
+    POST — сохраняет ContactMessage, redirect-after-POST → success banner.
+    Доступна всем ролям и анонимным пользователям (F02).
+    """
+    if request.method == 'POST':
+        form = ContactMessageForm(request.POST)
+        if form.is_valid():
+            contact = form.save(commit=False)
+            if request.user.is_authenticated:
+                contact.user = request.user
+            contact.save()
+            messages.success(request, CONTACT_SUCCESS_MESSAGE)
+            return redirect(reverse('core:contacts'))
+        # Невалидная форма — повторный рендер с ошибками (без редиректа)
+        return render(request, 'core/contacts.html', {'form': form})
+
+    # GET — предзаполнение для авторизованных пользователей
+    initial = {}
+    if request.user.is_authenticated:
+        first = request.user.first_name.strip()
+        last  = request.user.last_name.strip()
+        initial['name']  = f'{first} {last}'.strip() or request.user.username
+        initial['email'] = request.user.email
+
+    form = ContactMessageForm(initial=initial)
+    return render(request, 'core/contacts.html', {'form': form})
 
 
 # ─── Аутентификация (F01) ────────────────────────────────────────────────────

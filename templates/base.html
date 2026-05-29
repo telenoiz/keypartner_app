@@ -141,6 +141,8 @@
   <!-- ─── Основной контент ───────────────────────────────────────────── -->
   <main class="site-main" id="main-content" role="main">
     <div class="container">
+      {# Хлебные крошки — каждая страница переопределяет этот блок (ТЗ §3) #}
+      {% block breadcrumbs %}{% endblock %}
       {% block content %}{% endblock %}
     </div>
   </main>
@@ -150,6 +152,7 @@
     <div class="container">
       <p class="footer-copy">
         &copy; {% now "Y" %} ООО «Ки Партнер ИТ». Все права защищены.
+        {% if SITE_AUTHOR %}&nbsp;·&nbsp;Автор: {{ SITE_AUTHOR }}{% endif %}
       </p>
     </div>
   </footer>

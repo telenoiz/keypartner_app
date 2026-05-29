@@ -394,6 +394,111 @@ button { font-family: var(--font-base); }
   box-shadow: var(--shadow-sm);
 }
 
+/* ─── Breadcrumbs (ТЗ §3: хлебные крошки на каждой странице) ───────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  list-style: none;
+  padding: var(--space-3) 0 var(--space-2);
+  font-size: var(--text-small);
+  color: var(--color-neutral-600);
+  border-bottom: 1px solid var(--color-neutral-300);
+  margin-bottom: var(--space-6);
+}
+
+.breadcrumb__item + .breadcrumb__item::before {
+  content: '/';
+  margin: 0 var(--space-2);
+  color: var(--color-neutral-300);
+  user-select: none;
+}
+
+.breadcrumb__item a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.breadcrumb__item a:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.breadcrumb__item[aria-current="page"] {
+  color: var(--color-neutral-600);
+  font-weight: 500;
+}
+
+/* ─── Contacts layout ────────────────────────────────────────────────────── */
+.contacts-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-10);
+  align-items: start;
+}
+
+.contacts-info__title {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-4);
+}
+
+.contacts-info__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.contacts-info__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.contacts-info__label {
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-neutral-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.contacts-info__value {
+  font-size: var(--text-body);
+  color: var(--color-neutral-900);
+}
+
+.contacts-info__value a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.contacts-info__value a:hover {
+  text-decoration: underline;
+}
+
+.contacts-form__title {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-6);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .contacts-layout { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
 /* ─── Form ──────────────────────────────────────────────────────────────── */
 .form-group {
   display: flex;

@@ -49,6 +49,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # ВКР-035: ФИО автора и метаданные сайта (ТЗ §9)
+                'core.context_processors.site_meta',
             ],
         },
     },
@@ -100,3 +102,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ─── Метаданные сайта (ТЗ §9) ────────────────────────────────────────────────
+# ФИО автора ВКР — отображается в подвале (требование ТЗ §9 «ФИО в подвале»)
+SITE_AUTHOR = config('SITE_AUTHOR', default='Люлюкин Игорь Владимирович')

@@ -2,6 +2,28 @@
 
 ---
 
+## 🚀 Release 0.6 — Контакты, форма обратной связи, хлебные крошки
+📅 29.05.2026
+
+### ✨ Added
+- `core/forms.py`: `ContactMessageForm(ModelForm)` — валидация name, email, phone (regex), subject, message (min 10 симв.); все ошибки именованными константами
+- `core/context_processors.py`: `site_meta` — передаёт `SITE_AUTHOR` во все шаблоны
+- `templates/core/contacts.html`: page-hero + contacts-layout (реквизиты + форма), inline-ошибки, ARIA, breadcrumbs
+- `static/css/style.css`: `.breadcrumb`, `.contacts-layout`, `.contacts-info__*`, `.contacts-form__*`, `.form-row` (адаптивный 2-col)
+
+### 🔄 Changed
+- `core/views.py`: `contacts_view` — GET (pre-fill для авторизованных) + POST (сохранение, redirect-after-POST, `messages.success`)
+- `keypartner/settings.py`: context processor `core.context_processors.site_meta`; константа `SITE_AUTHOR` из env (ТЗ §9)
+- `templates/base.html`: `{% block breadcrumbs %}` перед контентом; `{{ SITE_AUTHOR }}` в footer (ТЗ §9)
+- Все 8 шаблонов: `{% block breadcrumbs %}` с хлебными крошками (ТЗ §3)
+
+### 🔐 Security & Permissions
+- `{% csrf_token %}` обязателен; POST без токена → 403
+- Форма доступна всем ролям и анонимам; `user` FK заполняется только при `is_authenticated`
+- Redirect-after-POST исключает double-submit
+
+---
+
 ## 🚀 Release 0.5 — Страницы контента
 📅 28.05.2026
 

@@ -4,6 +4,15 @@
 
 {% block meta_description %}Каталог услуг ООО «Ки Партнер ИТ» — разработка и внедрение программных решений для корпоративных заказчиков{% endblock %}
 
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item" aria-current="page">Услуги</li>
+  </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
 
 {# ══════════════════════════════════════════════════════════════════════════ #}

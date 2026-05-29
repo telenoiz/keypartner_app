@@ -2,14 +2,197 @@
 
 {% block title %}Контакты — Key Partner IT{% endblock %}
 
-{% block content %}
-<div class="page-header">
-  <h1 class="page-title">Контакты</h1>
-  <p class="page-subtitle">Свяжитесь с нами или оставьте обращение через форму.</p>
-</div>
+{% block meta_description %}Свяжитесь с ООО «Ки Партнер ИТ» — оставьте обращение через форму или воспользуйтесь контактными данными компании{% endblock %}
 
-{# Форма ContactMessage, валидация, success-страница — ВКР-035 #}
-<p style="color: var(--color-neutral-600); font-size: var(--text-body);">
-  Страница в разработке — <strong>ВКР-035</strong>.
-</p>
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item" aria-current="page">Контакты</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+{# ══════════════════════════════════════════════════════════════════════════ #}
+{# Page hero                                                                  #}
+{# ══════════════════════════════════════════════════════════════════════════ #}
+<section class="page-hero" aria-labelledby="page-title">
+  <h1 class="page-hero__title" id="page-title">Контакты</h1>
+  <p class="page-hero__subtitle">
+    Свяжитесь с нами — ответим в течение одного рабочего дня.
+  </p>
+</section>
+
+{# ══════════════════════════════════════════════════════════════════════════ #}
+{# Основной блок: контактная информация + форма                              #}
+{# ══════════════════════════════════════════════════════════════════════════ #}
+<section class="contacts-layout" aria-label="Контакты и форма обращения">
+
+  {# ── Контактная информация ─────────────────────────────────────────── #}
+  <aside>
+    <h2 class="contacts-info__title">Наши контакты</h2>
+    <ul class="contacts-info__list" role="list">
+      <li class="contacts-info__item">
+        <span class="contacts-info__label">Организация</span>
+        <span class="contacts-info__value">ООО «Ки Партнер ИТ»</span>
+      </li>
+      <li class="contacts-info__item">
+        <span class="contacts-info__label">Email</span>
+        <span class="contacts-info__value">
+          <a href="mailto:info@keypartner.ru">info@keypartner.ru</a>
+        </span>
+      </li>
+      <li class="contacts-info__item">
+        <span class="contacts-info__label">Телефон</span>
+        <span class="contacts-info__value">
+          <a href="tel:+74951234567">+7 (495) 123-45-67</a>
+        </span>
+      </li>
+      <li class="contacts-info__item">
+        <span class="contacts-info__label">Адрес</span>
+        <span class="contacts-info__value">
+          г. Москва, ул. Технологическая, д. 1, офис 101
+        </span>
+      </li>
+      <li class="contacts-info__item">
+        <span class="contacts-info__label">Режим работы</span>
+        <span class="contacts-info__value">Пн–Пт: 09:00–18:00</span>
+      </li>
+    </ul>
+  </aside>
+
+  {# ── Форма обратной связи ──────────────────────────────────────────── #}
+  <div>
+    <h2 class="contacts-form__title">Написать нам</h2>
+
+    <form method="post"
+          action="{% url 'core:contacts' %}"
+          aria-label="Форма обратной связи"
+          novalidate>
+      {% csrf_token %}
+
+      {# Строка: Имя + Email #}
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.name.id_for_label }}">
+            {{ form.name.label }}<span aria-hidden="true"> *</span>
+          </label>
+          <input type="text"
+                 id="{{ form.name.id_for_label }}"
+                 name="{{ form.name.html_name }}"
+                 class="form-input{% if form.name.errors %} form-input--error{% endif %}"
+                 value="{{ form.name.value|default:'' }}"
+                 placeholder="{{ form.name.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.name.field.widget.attrs.autocomplete }}"
+                 maxlength="{{ form.name.field.max_length }}"
+                 required aria-required="true"
+                 {% if form.name.errors %}aria-describedby="err-name"{% endif %}>
+          {% if form.name.errors %}
+          <span class="form-error" id="err-name" role="alert">
+            {{ form.name.errors.0 }}
+          </span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.email.id_for_label }}">
+            {{ form.email.label }}<span aria-hidden="true"> *</span>
+          </label>
+          <input type="email"
+                 id="{{ form.email.id_for_label }}"
+                 name="{{ form.email.html_name }}"
+                 class="form-input{% if form.email.errors %} form-input--error{% endif %}"
+                 value="{{ form.email.value|default:'' }}"
+                 placeholder="{{ form.email.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.email.field.widget.attrs.autocomplete }}"
+                 maxlength="{{ form.email.field.max_length }}"
+                 required aria-required="true"
+                 {% if form.email.errors %}aria-describedby="err-email"{% endif %}>
+          {% if form.email.errors %}
+          <span class="form-error" id="err-email" role="alert">
+            {{ form.email.errors.0 }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Строка: Телефон + Тема #}
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.phone.id_for_label }}">
+            {{ form.phone.label }}
+          </label>
+          <input type="tel"
+                 id="{{ form.phone.id_for_label }}"
+                 name="{{ form.phone.html_name }}"
+                 class="form-input{% if form.phone.errors %} form-input--error{% endif %}"
+                 value="{{ form.phone.value|default:'' }}"
+                 placeholder="{{ form.phone.field.widget.attrs.placeholder }}"
+                 autocomplete="{{ form.phone.field.widget.attrs.autocomplete }}"
+                 maxlength="{{ form.phone.field.max_length }}"
+                 {% if form.phone.errors %}aria-describedby="err-phone"{% endif %}>
+          {% if form.phone.errors %}
+          <span class="form-error" id="err-phone" role="alert">
+            {{ form.phone.errors.0 }}
+          </span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.subject.id_for_label }}">
+            {{ form.subject.label }}<span aria-hidden="true"> *</span>
+          </label>
+          <input type="text"
+                 id="{{ form.subject.id_for_label }}"
+                 name="{{ form.subject.html_name }}"
+                 class="form-input{% if form.subject.errors %} form-input--error{% endif %}"
+                 value="{{ form.subject.value|default:'' }}"
+                 placeholder="{{ form.subject.field.widget.attrs.placeholder }}"
+                 maxlength="{{ form.subject.field.max_length }}"
+                 required aria-required="true"
+                 {% if form.subject.errors %}aria-describedby="err-subject"{% endif %}>
+          {% if form.subject.errors %}
+          <span class="form-error" id="err-subject" role="alert">
+            {{ form.subject.errors.0 }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Сообщение #}
+      <div class="form-group">
+        <label class="form-label" for="{{ form.message.id_for_label }}">
+          {{ form.message.label }}<span aria-hidden="true"> *</span>
+        </label>
+        <textarea id="{{ form.message.id_for_label }}"
+                  name="{{ form.message.html_name }}"
+                  class="form-input{% if form.message.errors %} form-input--error{% endif %}"
+                  rows="{{ form.message.field.widget.attrs.rows }}"
+                  placeholder="{{ form.message.field.widget.attrs.placeholder }}"
+                  required aria-required="true"
+                  {% if form.message.errors %}aria-describedby="err-message"{% endif %}>{{ form.message.value|default:'' }}</textarea>
+        {% if form.message.errors %}
+        <span class="form-error" id="err-message" role="alert">
+          {{ form.message.errors.0 }}
+        </span>
+        {% endif %}
+      </div>
+
+      {# Кнопка отправки #}
+      <div class="form-group" style="margin-bottom: 0;">
+        <button type="submit" class="btn btn-primary">
+          Отправить обращение
+        </button>
+        <p style="margin-top: var(--space-2); font-size: var(--text-small); color: var(--color-neutral-600);">
+          Поля, отмеченные <span aria-hidden="true">*</span><span class="sr-only">звёздочкой</span>, обязательны для заполнения.
+        </p>
+      </div>
+
+    </form>
+  </div>
+
+</section>
+
 {% endblock %}
