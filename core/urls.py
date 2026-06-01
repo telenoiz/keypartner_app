@@ -23,5 +23,13 @@ urlpatterns = [
     path('logout/',    views.logout_view,    name='logout'),
 
     # Личный кабинет — требует авторизации (F02–F10)
-    path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('dashboard/',             views.dashboard_view,      name='dashboard'),
+    path('dashboard/tickets/new/', views.ticket_create_view,  name='ticket_create'),
+
+    # Статические публичные страницы (ВКР-037)
+    path('about/',   views.about_view,   name='about'),
+    path('sitemap/', views.sitemap_view, name='sitemap'),
+
+    # Детальная новость (ВКР-037)
+    path('news/<int:pk>/', views.news_detail_view, name='news_detail'),
 ]

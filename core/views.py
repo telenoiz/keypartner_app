@@ -3,15 +3,17 @@ View-функции приложения core.
 Требования: F01–F14 (1.4_Analiz_Trebovaniy_Polzovateley.md)
 """
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout as auth_logout, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.urls import reverse
 
+from django.core.paginator import Paginator
+
 from .models import Service, News, Project, Role
-from .forms import ContactMessageForm, LoginForm, RegisterForm
+from .forms import ContactMessageForm, LoginForm, RegisterForm, ProjectCreateForm
 
 # ─── Константы ──────────────────────────────────────────────────────────────
 
@@ -37,6 +39,10 @@ REGISTER_ROLE_NOT_FOUND  = (
 SERVICES_PER_PAGE  = 20
 NEWS_PER_PAGE      = 10
 PROJECTS_PER_PAGE  = 9   # кратно 3 — сетка 3-в-ряд
+
+# Дашборд клиента (ВКР-038)
+DASHBOARD_TICKETS_PER_PAGE = 10
+TICKET_CREATE_SUCCESS_MESSAGE = 'Заявка успешно создана. Мы свяжемся с вами в ближайшее время.'
 
 
 # ─── Публичные страницы ──────────────────────────────────────────────────────
@@ -137,6 +143,37 @@ def contacts_view(request):
     return render(request, 'core/contacts.html', {'form': form})
 
 
+# ─── Статические публичные страницы (ВКР-037) ───────────────────────────────
+
+def about_view(request):
+    """
+    О компании — статическая публичная страница.
+    Доступна всем. Закрывает критерий §4 «≥10 страниц».
+    """
+    return render(request, 'core/about.html')
+
+
+def sitemap_view(request):
+    """
+    Карта сайта — структурированный список всех разделов.
+    Доступна всем. Закрывает критерий §4 «≥10 страниц».
+    """
+    return render(request, 'core/sitemap.html')
+
+
+def news_detail_view(request, pk):
+    """
+    Детальная страница новости.
+    Доступна всем. 404 если новость не опубликована (published_at is None).
+    """
+    news_item = get_object_or_404(
+        News.objects.select_related('author'),
+        pk=pk,
+        published_at__isnull=False,
+    )
+    return render(request, 'core/news_detail.html', {'news_item': news_item})
+
+
 # ─── Аутентификация (F01) ────────────────────────────────────────────────────
 
 def login_view(request):
@@ -207,11 +244,56 @@ def logout_view(request):
 @login_required
 def dashboard_view(request):
     """
-    Дашборд — требует авторизации.
-    Неавторизованных редиректит на /login/?next=/dashboard/
-    Полная реализация (роль-зависимые представления) — ВКР-037.
+    Дашборд клиента — список его заявок с пагинацией и счётчиками по статусам (F03).
+    Требует авторизации. Неавторизованных редиректит на /login/?next=/dashboard/.
+    Полная реализация: ВКР-038.
     """
-    return render(request, 'core/dashboard.html')
+    tickets_qs = (
+        Project.objects
+        .filter(user=request.user)
+        .select_related('service', 'priority')
+        .order_by('-created_at')
+    )
+
+    # Счётчики по статусам для stat-cards
+    stats = {
+        'new':         tickets_qs.filter(status=Project.STATUS_NEW).count(),
+        'in_progress': tickets_qs.filter(status=Project.STATUS_IN_PROGRESS).count(),
+        'resolved':    tickets_qs.filter(
+                           status__in=[Project.STATUS_RESOLVED, Project.STATUS_CLOSED]
+                       ).count(),
+        'total':       tickets_qs.count(),
+    }
+
+    paginator = Paginator(tickets_qs, DASHBOARD_TICKETS_PER_PAGE)
+    page_obj  = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'core/dashboard.html', {
+        'page_obj': page_obj,
+        'stats':    stats,
+    })
+
+
+@login_required
+def ticket_create_view(request):
+    """
+    Форма создания новой заявки клиентом (F02).
+    POST: сохраняет заявку со статусом STATUS_NEW и текущим пользователем.
+    Redirect-after-POST → дашборд.
+    """
+    if request.method == 'POST':
+        form = ProjectCreateForm(request.POST)
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.user   = request.user
+            ticket.status = Project.STATUS_NEW
+            ticket.save()
+            messages.success(request, TICKET_CREATE_SUCCESS_MESSAGE)
+            return redirect(reverse('core:dashboard'))
+        return render(request, 'core/ticket_create.html', {'form': form})
+
+    form = ProjectCreateForm()
+    return render(request, 'core/ticket_create.html', {'form': form})
 
 
 # ─── Обработчики ошибок (ВКР-036) ───────────────────────────────────────────

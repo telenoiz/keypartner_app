@@ -645,6 +645,322 @@ button { font-family: var(--font-base); }
   left: var(--space-4);
 }
 
+/* ─── Кнопка малого размера (ВКР-037) ───────────────────────────────────── */
+.btn-sm {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-small);
+}
+
+/* ─── О компании (ВКР-037) ──────────────────────────────────────────────── */
+.about-section {
+  margin-bottom: var(--space-10);
+}
+
+.about-section h2 {
+  font-size: var(--text-h2);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-4);
+}
+
+.about-section p {
+  color: var(--color-neutral-700);
+  line-height: 1.7;
+  margin-bottom: var(--space-3);
+  max-width: 72ch;
+}
+
+.about-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.about-list__item {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-neutral-50);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-neutral-700);
+  line-height: 1.6;
+}
+
+.about-cta {
+  text-align: center;
+  padding: var(--space-10) 0 var(--space-6);
+}
+
+.about-cta h2 {
+  font-size: var(--text-h2);
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.about-cta p {
+  color: var(--color-neutral-600);
+  margin-bottom: var(--space-6);
+}
+
+/* ─── Карта сайта (ВКР-037) ─────────────────────────────────────────────── */
+.sitemap-section {
+  margin-bottom: var(--space-8);
+}
+
+.sitemap-section h2 {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.sitemap-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sitemap-list__item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.sitemap-list__item a {
+  font-weight: 500;
+  color: var(--color-primary);
+  min-width: 140px;
+}
+
+.sitemap-list__item a:hover {
+  text-decoration: underline;
+}
+
+.sitemap-list__desc {
+  font-size: var(--text-small);
+  color: var(--color-neutral-500);
+}
+
+/* ─── Дашборд клиента (ВКР-038) ─────────────────────────────────────────── */
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.dashboard-title {
+  font-size: var(--text-h1);
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-1);
+}
+
+.dashboard-subtitle {
+  font-size: var(--text-small);
+  color: var(--color-neutral-500);
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.stat-card {
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.stat-card--new      { border-left: 3px solid var(--badge-new-border); }
+.stat-card--progress { border-left: 3px solid var(--badge-in_progress-border); }
+.stat-card--resolved { border-left: 3px solid var(--badge-resolved-border); }
+
+.stat-card__value {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  line-height: 1;
+}
+
+.stat-card__label {
+  font-size: var(--text-small);
+  color: var(--color-neutral-500);
+}
+
+.section-title {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-4);
+}
+
+.tickets-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-neutral-200);
+  margin-bottom: var(--space-4);
+}
+
+.tickets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-small);
+}
+
+.tickets-table thead {
+  background: var(--color-neutral-50);
+}
+
+.tickets-table th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-neutral-600);
+  border-bottom: 1px solid var(--color-neutral-200);
+  white-space: nowrap;
+}
+
+.tickets-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-neutral-100);
+  color: var(--color-neutral-700);
+  vertical-align: middle;
+}
+
+.ticket-row:last-child td {
+  border-bottom: none;
+}
+
+.ticket-row:hover {
+  background: var(--color-neutral-50);
+}
+
+.ticket-row__id {
+  color: var(--color-neutral-400);
+  font-size: var(--text-small);
+  white-space: nowrap;
+}
+
+.ticket-row__title {
+  font-weight: 500;
+  color: var(--color-neutral-900);
+  max-width: 280px;
+}
+
+.ticket-row__date {
+  white-space: nowrap;
+  color: var(--color-neutral-500);
+}
+
+/* ─── Пагинация (ВКР-038) ───────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.pagination__link {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-size: var(--text-small);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.pagination__link:hover {
+  background: var(--color-neutral-50);
+}
+
+.pagination__info {
+  font-size: var(--text-small);
+  color: var(--color-neutral-500);
+}
+
+/* ─── Форма заявки (ВКР-038) ────────────────────────────────────────────── */
+.ticket-form-card {
+  max-width: 680px;
+  margin: var(--space-8) auto;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  flex-wrap: wrap;
+}
+
+/* ─── Детальная новость (ВКР-037) ───────────────────────────────────────── */
+.news-detail {
+  max-width: 72ch;
+  margin: var(--space-6) 0;
+}
+
+.news-detail__header {
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-neutral-200);
+  padding-bottom: var(--space-4);
+}
+
+.news-detail__title {
+  font-size: var(--text-h1);
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-3);
+  line-height: 1.2;
+}
+
+.news-detail__meta {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  font-size: var(--text-small);
+  color: var(--color-neutral-500);
+}
+
+.news-detail__body {
+  color: var(--color-neutral-700);
+  line-height: 1.8;
+  font-size: var(--text-body);
+}
+
+.news-detail__body p {
+  margin-bottom: var(--space-4);
+}
+
+.news-detail__footer {
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+/* ─── Ссылка в карточке новости (ВКР-037) ───────────────────────────────── */
+.news-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.news-card__link:hover {
+  color: var(--color-primary);
+}
+
 /* ─── Кнопка большого размера (ВКР-033) ─────────────────────────────────── */
 .btn-lg {
   padding: var(--space-3) var(--space-6);

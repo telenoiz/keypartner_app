@@ -37,8 +37,15 @@
               {{ item.published_at|date:'d.m.Y' }}
             </time>
           </div>
-          <h2 class="news-card__title">{{ item.title }}</h2>
+          <h2 class="news-card__title">
+            <a href="{% url 'core:news_detail' pk=item.pk %}" class="news-card__link">
+              {{ item.title }}
+            </a>
+          </h2>
           <p class="news-card__text">{{ item.content|truncatewords:30 }}</p>
+          <a href="{% url 'core:news_detail' pk=item.pk %}" class="btn btn-outline btn-sm">
+            Читать далее →
+          </a>
         </li>
       {% endfor %}
     </ul>

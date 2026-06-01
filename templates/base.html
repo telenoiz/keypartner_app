@@ -74,7 +74,20 @@
               Контакты
             </a>
           </li>
-          {% if user.is_authenticated %}
+          <li>
+            <a href="{% url 'core:about' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'about' %}nav-link--active{% endif %}"
+               {% if request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>
+              О компании
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:sitemap' %}"
+               class="nav-link {% if request.resolver_match.url_name == 'sitemap' %}nav-link--active{% endif %}"
+               {% if request.resolver_match.url_name == 'sitemap' %}aria-current="page"{% endif %}>
+              Карта сайта
+            </a>
+          </li>
           <li>
             <a href="{% url 'core:dashboard' %}"
                class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}nav-link--active{% endif %}"
@@ -82,7 +95,6 @@
               Личный кабинет
             </a>
           </li>
-          {% endif %}
         </ul>
       </nav>
 

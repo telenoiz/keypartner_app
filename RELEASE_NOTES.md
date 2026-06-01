@@ -2,6 +2,48 @@
 
 ---
 
+## 🚀 Release 0.9 — Дашборд клиента: список заявок + создание заявки
+📅 01.06.2026
+
+### ✨ Added
+- `core/forms.py`: `ProjectCreateForm(ModelForm)` — поля title/description/service/priority; валидация `TITLE_MIN_LENGTH=5`; queryset только активных услуг
+- `templates/core/ticket_create.html`: форма новой заявки — 2-col layout (service + priority), CSRF, кнопка «Отмена»
+- `core/views.py`: `ticket_create_view` — GET+POST, `@login_required`, статус `STATUS_NEW` явно, redirect-after-POST
+- `core/urls.py`: маршрут `/dashboard/tickets/new/`
+- `static/css/style.css`: `.dashboard-header`, `.dashboard-stats`, `.stat-card`, `.stat-card--{new/progress/resolved}`, `.tickets-table`, `.ticket-row`, `.pagination`, `.ticket-form-card`, `.form-actions`
+
+### 🔄 Changed
+- `templates/core/dashboard.html`: полная перепись — заголовок + кнопка «Создать заявку», 4 stat-cards (Всего/Новых/В работе/Решено), таблица заявок с бейджами статусов, пагинация, empty state
+- `core/views.py`: `dashboard_view` — полная реализация: `Project.objects.filter(user=request.user)`, `Paginator`, счётчики по статусам
+- Удалён inline `style="color:..."` из старого `dashboard.html`
+
+### 📊 TZ_CHECKLIST
+- Критерий #17 «ЛК клиента ≥5 страниц» → 🔄 2/5 страниц готово
+
+---
+
+## 🚀 Release 0.8 — О компании, Карта сайта, детальная новость
+📅 29.05.2026
+
+### ✨ Added
+- `templates/core/about.html`: страница «О компании» — hero, описание, 4 направления деятельности, 4 преимущества (Heroicons), CTA «Связаться с нами»
+- `templates/core/sitemap.html`: карта сайта — структурированный список всех разделов с описаниями
+- `templates/core/news_detail.html`: детальная страница новости — заголовок, дата, автор, полный текст, кнопка «← Все новости»
+- `core/views.py`: `about_view`, `sitemap_view`, `news_detail_view` (с `get_object_or_404`, 404 для неопубликованных)
+- `core/urls.py`: маршруты `/about/`, `/sitemap/`, `/news/<int:pk>/`
+- `static/css/style.css`: `.btn-sm`, `.about-section`, `.about-list`, `.about-cta`, `.sitemap-section`, `.sitemap-list`, `.news-detail`, `.news-card__link`
+
+### 🔄 Changed
+- `templates/base.html`: добавлены «О компании» и «Карта сайта» в nav; «Личный кабинет» показывается всем (redirect для анонимных через `@login_required`)
+- `templates/core/news.html`: заголовки карточек и кнопка «Читать далее →» ведут на `news_detail`
+
+### 📊 TZ_CHECKLIST
+- Критерий #8 «≥10 страниц» → ✅ (было ⚠️, +2 балла)
+- Критерий #11 «≥10 пунктов меню» → ✅ (было ⚠️, +2 балла)
+- Счёт: 32 → **36 / 57 баллов**
+
+---
+
 ## 🚀 Release 0.7 — Аутентификация: логин, регистрация, 404
 📅 29.05.2026
 
