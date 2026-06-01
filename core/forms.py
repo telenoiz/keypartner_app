@@ -2,12 +2,13 @@
 Формы приложения core.
 ВКР-035: ContactMessageForm — форма обратной связи.
 ВКР-036: LoginForm, RegisterForm — аутентификация и регистрация.
+ВКР-038: ProjectCreateForm — создание заявки клиентом (F02).
 """
 
 import re
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
-from .models import ContactMessage
+from .models import ContactMessage, Project, Service, Priority
 
 User = get_user_model()
 
@@ -231,3 +232,58 @@ class RegisterForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+# ─── Форма создания заявки (ВКР-038) ─────────────────────────────────────────
+
+TITLE_MIN_LENGTH = 5
+
+ERR_TITLE_TOO_SHORT = (
+    f'Тема заявки должна содержать не менее {TITLE_MIN_LENGTH} символов.'
+)
+
+
+class ProjectCreateForm(forms.ModelForm):
+    """
+    Форма создания новой заявки клиентом (F02).
+    Поля user и status заполняются во view, не в форме.
+    """
+
+    class Meta:
+        model  = Project
+        fields = ['title', 'description', 'service', 'priority']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'placeholder': 'Кратко опишите тему заявки',
+                'autofocus': True,
+            }),
+            'description': forms.Textarea(attrs={
+                'rows': 5,
+                'placeholder': 'Подробно опишите задачу, проблему или вопрос…',
+            }),
+            'service': forms.Select(),
+            'priority': forms.Select(),
+        }
+        labels = {
+            'title':       'Тема заявки',
+            'description': 'Описание',
+            'service':     'Услуга',
+            'priority':    'Приоритет',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Только активные услуги
+        self.fields['service'].queryset = (
+            Service.objects.filter(is_active=True).order_by('title')
+        )
+        self.fields['priority'].queryset = Priority.objects.all()
+        # service и priority — обязательные
+        self.fields['service'].empty_label  = '— Выберите услугу —'
+        self.fields['priority'].empty_label = '— Выберите приоритет —'
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title', '').strip()
+        if len(title) < TITLE_MIN_LENGTH:
+            raise forms.ValidationError(ERR_TITLE_TOO_SHORT)
+        return title

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Создать заявку — Key Partner IT{% endblock %}
+
+{% block meta_description %}Создание новой заявки в ООО «Ки Партнер ИТ»{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item"><a href="{% url 'core:dashboard' %}">Личный кабинет</a></li>
+    <li class="breadcrumb__item" aria-current="page">Новая заявка</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-card auth-card--wide ticket-form-card">
+
+  <header class="auth-card__header">
+    <h1 class="auth-card__title">Новая заявка</h1>
+    <p class="auth-card__subtitle">Опишите задачу — менеджер свяжется с вами в ближайшее время</p>
+  </header>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {# non_field_errors #}
+    {% if form.non_field_errors %}
+    <div class="alert alert--danger" role="alert">
+      {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Тема заявки #}
+    <div class="form-group">
+      <label class="form-label" for="{{ form.title.id_for_label }}">
+        {{ form.title.label }} <span aria-hidden="true">*</span>
+      </label>
+      <input class="form-input {% if form.title.errors %}form-input--error{% endif %}"
+             type="text"
+             id="{{ form.title.id_for_label }}"
+             name="{{ form.title.html_name }}"
+             value="{{ form.title.value|default:'' }}"
+             placeholder="Кратко опишите тему заявки"
+             autofocus
+             required>
+      {% for error in form.title.errors %}
+        <p class="form-error" role="alert">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    {# Услуга + Приоритет — 2 колонки #}
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.service.id_for_label }}">
+          {{ form.service.label }} <span aria-hidden="true">*</span>
+        </label>
+        {{ form.service }}
+        {% for error in form.service.errors %}
+          <p class="form-error" role="alert">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.priority.id_for_label }}">
+          {{ form.priority.label }} <span aria-hidden="true">*</span>
+        </label>
+        {{ form.priority }}
+        {% for error in form.priority.errors %}
+          <p class="form-error" role="alert">{{ error }}</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# Описание #}
+    <div class="form-group">
+      <label class="form-label" for="{{ form.description.id_for_label }}">
+        {{ form.description.label }}
+      </label>
+      <textarea class="form-input {% if form.description.errors %}form-input--error{% endif %}"
+                id="{{ form.description.id_for_label }}"
+                name="{{ form.description.html_name }}"
+                rows="5"
+                placeholder="Подробно опишите задачу, проблему или вопрос…">{{ form.description.value|default:'' }}</textarea>
+      {% for error in form.description.errors %}
+        <p class="form-error" role="alert">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    {# Кнопки #}
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary btn--full">
+        Отправить заявку
+      </button>
+      <a href="{% url 'core:dashboard' %}" class="btn btn-outline">
+        Отмена
+      </a>
+    </div>
+
+  </form>
+
+</div>
+
+{% endblock %}

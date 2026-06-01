@@ -2,6 +2,8 @@
 
 {% block title %}Личный кабинет — Key Partner IT{% endblock %}
 
+{% block meta_description %}Управление вашими заявками в ООО «Ки Партнер ИТ»{% endblock %}
+
 {% block breadcrumbs %}
 <nav aria-label="Хлебные крошки">
   <ol class="breadcrumb">
@@ -12,19 +14,120 @@
 {% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1 class="page-title">Личный кабинет</h1>
-  <p class="page-subtitle">
-    Добро пожаловать, {{ user.username }}.
-    {% if user.is_admin %}Роль: Администратор.
-    {% elif user.is_manager %}Роль: Менеджер.
-    {% else %}Роль: Клиент.
-    {% endif %}
-  </p>
+
+{# ══════════════════════════════════════════════════════════════════════════ #}
+{# Заголовок + кнопка создания                                                #}
+{# ══════════════════════════════════════════════════════════════════════════ #}
+<div class="dashboard-header">
+  <div>
+    <h1 class="dashboard-title">Личный кабинет</h1>
+    <p class="dashboard-subtitle">
+      {{ user.get_full_name|default:user.username }}
+      {% if user.email %}&nbsp;·&nbsp;{{ user.email }}{% endif %}
+    </p>
+  </div>
+  <a href="{% url 'core:ticket_create' %}" class="btn btn-primary">
+    + Создать заявку
+  </a>
 </div>
 
-{# Список заявок клиента, статусы, пагинация — ВКР-037 #}
-<p style="color: var(--color-neutral-600); font-size: var(--text-body);">
-  Дашборд в разработке — <strong>ВКР-037</strong>.
-</p>
+{# ══════════════════════════════════════════════════════════════════════════ #}
+{# Статистика по статусам                                                     #}
+{# ══════════════════════════════════════════════════════════════════════════ #}
+<section class="dashboard-stats" aria-label="Статистика заявок">
+  <div class="stat-card">
+    <span class="stat-card__value">{{ stats.total }}</span>
+    <span class="stat-card__label">Всего заявок</span>
+  </div>
+  <div class="stat-card stat-card--new">
+    <span class="stat-card__value">{{ stats.new }}</span>
+    <span class="stat-card__label">Новых</span>
+  </div>
+  <div class="stat-card stat-card--progress">
+    <span class="stat-card__value">{{ stats.in_progress }}</span>
+    <span class="stat-card__label">В работе</span>
+  </div>
+  <div class="stat-card stat-card--resolved">
+    <span class="stat-card__value">{{ stats.resolved }}</span>
+    <span class="stat-card__label">Решено</span>
+  </div>
+</section>
+
+{# ══════════════════════════════════════════════════════════════════════════ #}
+{# Список заявок                                                               #}
+{# ══════════════════════════════════════════════════════════════════════════ #}
+<section aria-labelledby="tickets-heading">
+  <h2 id="tickets-heading" class="section-title">Мои заявки</h2>
+
+  {% if page_obj.object_list %}
+
+    <div class="tickets-table-wrap">
+      <table class="tickets-table" role="grid">
+        <thead>
+          <tr>
+            <th scope="col">№</th>
+            <th scope="col">Тема</th>
+            <th scope="col">Услуга</th>
+            <th scope="col">Приоритет</th>
+            <th scope="col">Статус</th>
+            <th scope="col">Дата</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in page_obj %}
+          <tr class="ticket-row">
+            <td class="ticket-row__id">#{{ ticket.pk }}</td>
+            <td class="ticket-row__title">{{ ticket.title }}</td>
+            <td class="ticket-row__service">{{ ticket.service.title }}</td>
+            <td class="ticket-row__priority">{{ ticket.priority }}</td>
+            <td class="ticket-row__status">
+              <span class="badge badge--{{ ticket.status }}">
+                {{ ticket.get_status_display }}
+              </span>
+            </td>
+            <td class="ticket-row__date">
+              <time datetime="{{ ticket.created_at|date:'Y-m-d' }}">
+                {{ ticket.created_at|date:'d.m.Y' }}
+              </time>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# ── Пагинация ─────────────────────────────────────────────────────── #}
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination" aria-label="Навигация по страницам">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="pagination__link">← Назад</a>
+      {% endif %}
+
+      <span class="pagination__info">
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+      </span>
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="pagination__link">Вперёд →</a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+  {% else %}
+    {# ── Empty state ───────────────────────────────────────────────────── #}
+    <div class="empty-state" role="status">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke-width="1.5" stroke="currentColor" width="40" height="40"
+           class="empty-state__icon" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z"/>
+      </svg>
+      <p class="empty-state__title">Заявок пока нет</p>
+      <p class="empty-state__text">Создайте первую заявку — и мы приступим к работе.</p>
+      <a href="{% url 'core:ticket_create' %}" class="btn btn-primary">Создать заявку</a>
+    </div>
+  {% endif %}
+
+</section>
+
 {% endblock %}
