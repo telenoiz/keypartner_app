@@ -24,7 +24,11 @@ urlpatterns = [
 
     # Личный кабинет — требует авторизации (F02–F10)
     path('dashboard/',             views.dashboard_view,      name='dashboard'),
-    path('dashboard/tickets/new/', views.ticket_create_view,  name='ticket_create'),
+    path('dashboard/tickets/new/',        views.ticket_create_view,  name='ticket_create'),
+    path('dashboard/tickets/<int:pk>/',           views.ticket_detail_view,         name='ticket_detail'),
+    path('dashboard/profile/',                    views.profile_view,               name='profile'),
+    path('dashboard/notifications/',              views.notifications_view,          name='notifications'),
+    path('dashboard/notifications/<int:pk>/read/', views.notification_mark_read_view, name='notification_read'),
 
     # Статические публичные страницы (ВКР-037)
     path('about/',   views.about_view,   name='about'),

@@ -76,8 +76,14 @@
         <tbody>
           {% for ticket in page_obj %}
           <tr class="ticket-row">
-            <td class="ticket-row__id">#{{ ticket.pk }}</td>
-            <td class="ticket-row__title">{{ ticket.title }}</td>
+            <td class="ticket-row__id">
+              <a href="{% url 'core:ticket_detail' pk=ticket.pk %}">#{{ ticket.pk }}</a>
+            </td>
+            <td class="ticket-row__title">
+              <a href="{% url 'core:ticket_detail' pk=ticket.pk %}" class="ticket-row__link">
+                {{ ticket.title }}
+              </a>
+            </td>
             <td class="ticket-row__service">{{ ticket.service.title }}</td>
             <td class="ticket-row__priority">{{ ticket.priority }}</td>
             <td class="ticket-row__status">

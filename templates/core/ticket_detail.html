@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Заявка #{{ ticket.pk }} — Key Partner IT{% endblock %}
+
+{% block meta_description %}Детали заявки № {{ ticket.pk }}: {{ ticket.title }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item"><a href="{% url 'core:dashboard' %}">Личный кабинет</a></li>
+    <li class="breadcrumb__item" aria-current="page">Заявка #{{ ticket.pk }}</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<article class="ticket-detail" aria-labelledby="ticket-title">
+
+  {# ── Шапка заявки ─────────────────────────────────────────────────────── #}
+  <header class="ticket-detail__header">
+    <div class="ticket-detail__title-row">
+      <h1 class="ticket-detail__title" id="ticket-title">
+        #{{ ticket.pk }} — {{ ticket.title }}
+      </h1>
+      <span class="badge badge--{{ ticket.status }}">
+        {{ ticket.get_status_display }}
+      </span>
+    </div>
+
+    <dl class="ticket-meta">
+      <div class="ticket-meta__item">
+        <dt class="ticket-meta__label">Услуга</dt>
+        <dd class="ticket-meta__value">{{ ticket.service.title }}</dd>
+      </div>
+      <div class="ticket-meta__item">
+        <dt class="ticket-meta__label">Приоритет</dt>
+        <dd class="ticket-meta__value">{{ ticket.priority }}</dd>
+      </div>
+      <div class="ticket-meta__item">
+        <dt class="ticket-meta__label">Создана</dt>
+        <dd class="ticket-meta__value">
+          <time datetime="{{ ticket.created_at|date:'Y-m-d' }}">
+            {{ ticket.created_at|date:'d.m.Y H:i' }}
+          </time>
+        </dd>
+      </div>
+      <div class="ticket-meta__item">
+        <dt class="ticket-meta__label">Обновлена</dt>
+        <dd class="ticket-meta__value">
+          <time datetime="{{ ticket.updated_at|date:'Y-m-d' }}">
+            {{ ticket.updated_at|date:'d.m.Y H:i' }}
+          </time>
+        </dd>
+      </div>
+      {% if ticket.manager %}
+      <div class="ticket-meta__item">
+        <dt class="ticket-meta__label">Менеджер</dt>
+        <dd class="ticket-meta__value">
+          {{ ticket.manager.get_full_name|default:ticket.manager.username }}
+        </dd>
+      </div>
+      {% endif %}
+    </dl>
+  </header>
+
+  {# ── Описание ─────────────────────────────────────────────────────────── #}
+  {% if ticket.description %}
+  <section class="ticket-detail__section" aria-labelledby="desc-heading">
+    <h2 class="ticket-detail__section-title" id="desc-heading">Описание</h2>
+    <div class="ticket-description">
+      {{ ticket.description|linebreaks }}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ── Вложения ─────────────────────────────────────────────────────────── #}
+  <section class="ticket-detail__section" aria-labelledby="attach-heading">
+    <h2 class="ticket-detail__section-title" id="attach-heading">Вложения</h2>
+    {% if ticket.attachments.all %}
+      <ul class="attachments-list" role="list">
+        {% for attachment in ticket.attachments.all %}
+        <li class="attachment-item">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               stroke-width="1.5" stroke="currentColor" width="16" height="16"
+               aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/>
+          </svg>
+          <span class="attachment-item__name">{{ attachment.filename }}</span>
+          <span class="attachment-item__meta">
+            {{ attachment.file_type }} · {{ attachment.file_size|filesizeformat }}
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="ticket-detail__empty">Вложений нет.</p>
+    {% endif %}
+  </section>
+
+  {# ── Комментарии ──────────────────────────────────────────────────────── #}
+  <section class="ticket-detail__section" aria-labelledby="comments-heading">
+    <h2 class="ticket-detail__section-title" id="comments-heading">
+      Комментарии
+      {% if ticket.comments.all %}
+        <span class="comments-count">({{ ticket.comments.count }})</span>
+      {% endif %}
+    </h2>
+
+    {% if ticket.comments.all %}
+      <ol class="comments-list" role="list">
+        {% for comment in ticket.comments.all %}
+        <li class="comment-card">
+          <header class="comment-card__header">
+            <span class="comment-card__author">
+              {{ comment.user.get_full_name|default:comment.user.username }}
+            </span>
+            <time class="comment-card__date"
+                  datetime="{{ comment.created_at|date:'Y-m-d' }}">
+              {{ comment.created_at|date:'d.m.Y H:i' }}
+            </time>
+            {% if comment.is_edited %}
+              <span class="comment-card__edited">(изменено)</span>
+            {% endif %}
+          </header>
+          <div class="comment-card__body">
+            {{ comment.text|linebreaks }}
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="ticket-detail__empty">Комментариев пока нет.</p>
+    {% endif %}
+  </section>
+
+  {# ── Кнопка назад ─────────────────────────────────────────────────────── #}
+  <footer class="ticket-detail__footer">
+    <a href="{% url 'core:dashboard' %}" class="btn btn-outline">
+      ← Мои заявки
+    </a>
+  </footer>
+
+</article>
+
+{% endblock %}

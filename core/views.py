@@ -12,8 +12,8 @@ from django.urls import reverse
 
 from django.core.paginator import Paginator
 
-from .models import Service, News, Project, Role
-from .forms import ContactMessageForm, LoginForm, RegisterForm, ProjectCreateForm
+from .models import Service, News, Project, Role, Notification
+from .forms import ContactMessageForm, LoginForm, RegisterForm, ProjectCreateForm, ProfileUpdateForm
 
 # ─── Константы ──────────────────────────────────────────────────────────────
 
@@ -43,6 +43,13 @@ PROJECTS_PER_PAGE  = 9   # кратно 3 — сетка 3-в-ряд
 # Дашборд клиента (ВКР-038)
 DASHBOARD_TICKETS_PER_PAGE = 10
 TICKET_CREATE_SUCCESS_MESSAGE = 'Заявка успешно создана. Мы свяжемся с вами в ближайшее время.'
+
+# Детальная заявка (ВКР-040)
+TICKET_NOT_FOUND_MESSAGE = 'Заявка не найдена или недоступна.'
+
+# Профиль и уведомления (ВКР-041)
+PROFILE_UPDATE_SUCCESS  = 'Профиль успешно обновлён.'
+NOTIFICATIONS_PER_PAGE  = 20
 
 
 # ─── Публичные страницы ──────────────────────────────────────────────────────
@@ -294,6 +301,82 @@ def ticket_create_view(request):
 
     form = ProjectCreateForm()
     return render(request, 'core/ticket_create.html', {'form': form})
+
+
+# ─── Детальная заявка клиента (ВКР-040) ─────────────────────────────────────
+
+@login_required
+def ticket_detail_view(request, pk):
+    """
+    Детальная страница заявки клиента (F03, F05).
+    Клиент видит только свои заявки — фильтр по user=request.user.
+    Показывает: статус, описание, комментарии, список вложений (имена).
+    """
+    ticket = get_object_or_404(
+        Project.objects
+        .select_related('service', 'priority', 'manager')
+        .prefetch_related('comments__user', 'attachments'),
+        pk=pk,
+        user=request.user,
+    )
+    return render(request, 'core/ticket_detail.html', {'ticket': ticket})
+
+
+# ─── Профиль и уведомления (ВКР-041) ────────────────────────────────────────
+
+@login_required
+def profile_view(request):
+    """
+    Профиль пользователя — просмотр и редактирование (F01).
+    GET: отображает форму с текущими данными.
+    POST: сохраняет first_name, last_name, email.
+    """
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, PROFILE_UPDATE_SUCCESS)
+            return redirect(reverse('core:profile'))
+        return render(request, 'core/profile.html', {'form': form})
+
+    form = ProfileUpdateForm(instance=request.user)
+    return render(request, 'core/profile.html', {'form': form})
+
+
+@login_required
+def notifications_view(request):
+    """
+    Список уведомлений пользователя с пагинацией (F04).
+    Показывает непрочитанные первыми.
+    """
+    notifications_qs = (
+        Notification.objects
+        .filter(user=request.user)
+        .select_related('project')
+        .order_by('is_read', '-created_at')
+    )
+    unread_count = notifications_qs.filter(is_read=False).count()
+
+    paginator = Paginator(notifications_qs, NOTIFICATIONS_PER_PAGE)
+    page_obj  = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'core/notifications.html', {
+        'page_obj':     page_obj,
+        'unread_count': unread_count,
+    })
+
+
+@login_required
+@require_POST
+def notification_mark_read_view(request, pk):
+    """
+    Отметить уведомление прочитанным (POST).
+    Проверяет владельца — чужое уведомление → 404.
+    """
+    notification = get_object_or_404(Notification, pk=pk, user=request.user)
+    notification.is_read = True
+    notification.save(update_fields=['is_read'])
+    return redirect(reverse('core:notifications'))
 
 
 # ─── Обработчики ошибок (ВКР-036) ───────────────────────────────────────────

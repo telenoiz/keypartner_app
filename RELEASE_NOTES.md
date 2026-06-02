@@ -2,6 +2,59 @@
 
 ---
 
+## 🚀 Release 0.12 — UI-фиксы навигации и feature cards
+📅 02.06.2026
+
+### 🔄 Changed
+- `static/css/style.css`: `white-space: nowrap` на `.nav-link` — пункты меню больше не переносятся на 2 строки
+- `.nav-link`: `font-size` → `text-small`, `padding` → `space-2` — все 10 пунктов умещаются в одну строку
+- `.nav-list`: `gap: 0` — убран лишний зазор
+- `.site-logo`: `flex-shrink: 0` — логотип не сжимается при нехватке места
+- `.feature-card`: `display: flex; flex-direction: column` — карточки одинаковой высоты
+
+---
+
+## 🚀 Release 0.11 — Профиль пользователя + Уведомления
+📅 01.06.2026
+
+### ✨ Added
+- `core/forms.py`: `ProfileUpdateForm` — first_name/last_name/email, clean_email с защитой от чужого email (exclude self)
+- `templates/core/profile.html`: боковая панель (аватар-буква, роль, дата регистрации, nav), форма редактирования, readonly логин
+- `templates/core/notifications.html`: список с бейджем непрочитанных, кнопка POST «Прочитано», ссылка на заявку, empty state, пагинация
+- `core/views.py`: `profile_view` GET+POST; `notifications_view` с Paginator и счётчиком unread; `notification_mark_read_view` (@require_POST, owner-check)
+- `core/urls.py`: `/dashboard/profile/`, `/dashboard/notifications/`, `/dashboard/notifications/<pk>/read/`
+- `static/css/style.css`: `.profile-layout` (grid 2-col), `.profile-sidebar`, `.profile-avatar`, `.profile-nav`, `.notifications-list`, `.notification-item--unread`, `.visually-hidden`
+
+### 🔐 Security
+- `notification_mark_read_view`: `@require_POST` + `get_object_or_404(..., user=request.user)` — чужое уведомление → 404
+- `ProfileUpdateForm.clean_email`: `exclude(pk=self.instance.pk)` — не блокирует сохранение собственного email
+
+### 📊 TZ_CHECKLIST
+- Критерий #17б «ЛК клиента ≥5 страниц» → ✅ (было 🔄, +5 баллов)
+- Счёт: 36 → **41 / 57 баллов**
+
+---
+
+## 🚀 Release 0.10 — Детальная страница заявки клиента
+📅 01.06.2026
+
+### ✨ Added
+- `templates/core/ticket_detail.html`: шапка с бейджем статуса и мета-данными (услуга, приоритет, даты, менеджер), блок описания, список вложений (имя + тип + размер), список комментариев с автором и датой
+- `core/views.py`: `ticket_detail_view` — `get_object_or_404(Project, pk=pk, user=request.user)`, `prefetch_related('comments__user', 'attachments')`
+- `core/urls.py`: маршрут `/dashboard/tickets/<int:pk>/`
+- `static/css/style.css`: `.ticket-detail`, `.ticket-detail__title-row`, `.ticket-meta`, `.ticket-description`, `.attachments-list`, `.attachment-item`, `.comments-list`, `.comment-card`, `.ticket-row__link`
+
+### 🔄 Changed
+- `templates/core/dashboard.html`: № и тема заявки → ссылки на `ticket_detail`
+
+### 🔐 Security
+- Клиент видит только свои заявки: фильтр `user=request.user` в `get_object_or_404` — чужая заявка возвращает 404
+
+### 📊 TZ_CHECKLIST
+- Критерий #17б «ЛК клиента ≥5 страниц» → 🔄 3/5
+
+---
+
 ## 🚀 Release 0.9 — Дашборд клиента: список заявок + создание заявки
 📅 01.06.2026
 
