@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Уведомления — Key Partner IT{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item"><a href="{% url 'core:dashboard' %}">Личный кабинет</a></li>
+    <li class="breadcrumb__item" aria-current="page">Уведомления</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+  <div>
+    <h1 class="dashboard-title">Уведомления</h1>
+    {% if unread_count %}
+      <p class="dashboard-subtitle">
+        Непрочитанных: <strong>{{ unread_count }}</strong>
+      </p>
+    {% endif %}
+  </div>
+</div>
+
+<section aria-labelledby="notifications-heading">
+  <h2 id="notifications-heading" class="visually-hidden">Список уведомлений</h2>
+
+  {% if page_obj.object_list %}
+    <ol class="notifications-list" role="list">
+      {% for notification in page_obj %}
+      <li class="notification-item {% if not notification.is_read %}notification-item--unread{% endif %}">
+
+        <div class="notification-item__body">
+          {% if not notification.is_read %}
+            <span class="notification-item__dot" aria-label="Непрочитано"></span>
+          {% endif %}
+          <p class="notification-item__message">{{ notification.message }}</p>
+          {% if notification.project %}
+            <a href="{% url 'core:ticket_detail' pk=notification.project.pk %}"
+               class="notification-item__link">
+              Перейти к заявке #{{ notification.project.pk }}
+            </a>
+          {% endif %}
+        </div>
+
+        <div class="notification-item__meta">
+          <time class="notification-item__date"
+                datetime="{{ notification.created_at|date:'Y-m-d' }}">
+            {{ notification.created_at|date:'d.m.Y H:i' }}
+          </time>
+
+          {% if not notification.is_read %}
+          <form method="post"
+                action="{% url 'core:notification_read' pk=notification.pk %}"
+                class="notification-item__form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline btn-sm">
+              Прочитано
+            </button>
+          </form>
+          {% else %}
+            <span class="notification-item__read-label">Прочитано</span>
+          {% endif %}
+        </div>
+
+      </li>
+      {% endfor %}
+    </ol>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination" aria-label="Навигация по страницам">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="pagination__link">← Назад</a>
+      {% endif %}
+      <span class="pagination__info">
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+      </span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="pagination__link">Вперёд →</a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+  {% else %}
+    <div class="empty-state" role="status">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke-width="1.5" stroke="currentColor" width="40" height="40"
+           class="empty-state__icon" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/>
+      </svg>
+      <p class="empty-state__title">Уведомлений нет</p>
+      <p class="empty-state__text">Здесь будут появляться обновления по вашим заявкам.</p>
+    </div>
+  {% endif %}
+
+</section>
+
+{% endblock %}

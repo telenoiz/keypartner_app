@@ -3,6 +3,7 @@
 ВКР-035: ContactMessageForm — форма обратной связи.
 ВКР-036: LoginForm, RegisterForm — аутентификация и регистрация.
 ВКР-038: ProjectCreateForm — создание заявки клиентом (F02).
+ВКР-041: ProfileUpdateForm — редактирование профиля пользователя (F01).
 """
 
 import re
@@ -287,3 +288,50 @@ class ProjectCreateForm(forms.ModelForm):
         if len(title) < TITLE_MIN_LENGTH:
             raise forms.ValidationError(ERR_TITLE_TOO_SHORT)
         return title
+
+
+# ─── Форма редактирования профиля (ВКР-041) ──────────────────────────────────
+
+ERR_EMAIL_EXISTS_OTHER = 'Этот email уже используется другим пользователем.'
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    """
+    Форма обновления профиля пользователя (F01).
+    Проверяет уникальность email среди других пользователей.
+    """
+
+    class Meta:
+        model  = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'placeholder': 'Иван',
+                'autocomplete': 'given-name',
+            }),
+            'last_name': forms.TextInput(attrs={
+                'placeholder': 'Иванов',
+                'autocomplete': 'family-name',
+            }),
+            'email': forms.EmailInput(attrs={
+                'placeholder': 'ivan@example.com',
+                'autocomplete': 'email',
+            }),
+        }
+        labels = {
+            'first_name': 'Имя',
+            'last_name':  'Фамилия',
+            'email':      'Email',
+        }
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip().lower()
+        # Проверяем уникальность среди других пользователей (не себя)
+        if (
+            User.objects
+            .filter(email__iexact=email)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            raise forms.ValidationError(ERR_EMAIL_EXISTS_OTHER)
+        return email

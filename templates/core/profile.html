@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль — Key Partner IT{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item"><a href="{% url 'core:dashboard' %}">Личный кабинет</a></li>
+    <li class="breadcrumb__item" aria-current="page">Профиль</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-layout">
+
+  {# ── Боковая панель ───────────────────────────────────────────────────── #}
+  <aside class="profile-sidebar">
+    <div class="profile-avatar" aria-hidden="true">
+      {{ user.username|first|upper }}
+    </div>
+    <p class="profile-sidebar__name">
+      {{ user.get_full_name|default:user.username }}
+    </p>
+    <p class="profile-sidebar__role">
+      {% if user.role %}{{ user.role.description|default:user.role.name }}{% endif %}
+    </p>
+    <p class="profile-sidebar__joined">
+      На сайте с {{ user.created_at|date:'d.m.Y' }}
+    </p>
+
+    <nav class="profile-nav" aria-label="Меню кабинета">
+      <a href="{% url 'core:dashboard' %}" class="profile-nav__link">Мои заявки</a>
+      <a href="{% url 'core:ticket_create' %}" class="profile-nav__link">Создать заявку</a>
+      <a href="{% url 'core:notifications' %}" class="profile-nav__link">Уведомления</a>
+      <a href="{% url 'core:profile' %}" class="profile-nav__link profile-nav__link--active"
+         aria-current="page">Профиль</a>
+    </nav>
+  </aside>
+
+  {# ── Основной контент ─────────────────────────────────────────────────── #}
+  <main class="profile-content">
+    <h1 class="dashboard-title">Профиль</h1>
+
+    <div class="card profile-card">
+      <h2 class="profile-card__title">Личные данные</h2>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert--danger" role="alert">
+          {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="{{ form.first_name.id_for_label }}">
+              {{ form.first_name.label }}
+            </label>
+            <input class="form-input {% if form.first_name.errors %}form-input--error{% endif %}"
+                   type="text"
+                   id="{{ form.first_name.id_for_label }}"
+                   name="{{ form.first_name.html_name }}"
+                   value="{{ form.first_name.value|default:'' }}"
+                   placeholder="Иван"
+                   autocomplete="given-name">
+            {% for error in form.first_name.errors %}
+              <p class="form-error" role="alert">{{ error }}</p>
+            {% endfor %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="{{ form.last_name.id_for_label }}">
+              {{ form.last_name.label }}
+            </label>
+            <input class="form-input {% if form.last_name.errors %}form-input--error{% endif %}"
+                   type="text"
+                   id="{{ form.last_name.id_for_label }}"
+                   name="{{ form.last_name.html_name }}"
+                   value="{{ form.last_name.value|default:'' }}"
+                   placeholder="Иванов"
+                   autocomplete="family-name">
+            {% for error in form.last_name.errors %}
+              <p class="form-error" role="alert">{{ error }}</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.email.id_for_label }}">
+            {{ form.email.label }}
+          </label>
+          <input class="form-input {% if form.email.errors %}form-input--error{% endif %}"
+                 type="email"
+                 id="{{ form.email.id_for_label }}"
+                 name="{{ form.email.html_name }}"
+                 value="{{ form.email.value|default:'' }}"
+                 placeholder="ivan@example.com"
+                 autocomplete="email">
+          {% for error in form.email.errors %}
+            <p class="form-error" role="alert">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Логин</label>
+          <input class="form-input form-input--readonly"
+                 type="text"
+                 value="{{ user.username }}"
+                 readonly
+                 aria-readonly="true">
+          <p class="form-hint">Логин изменить нельзя.</p>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+          <a href="{% url 'core:dashboard' %}" class="btn btn-outline">Отмена</a>
+        </div>
+      </form>
+    </div>
+
+  </main>
+</div>
+
+{% endblock %}
