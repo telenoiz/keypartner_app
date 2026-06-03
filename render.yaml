@@ -43,3 +43,4 @@ databases:
     databaseName: keypartner_db
     user: keypartner
     plan: free
+    region: frankfurt
