@@ -45,4 +45,8 @@ urlpatterns = [
 
     # Детальная новость (ВКР-037)
     path('news/<int:pk>/', views.news_detail_view, name='news_detail'),
+
+    # Экспорт отчётов (ВКР-046)
+    path('dashboard/manager/export/xlsx/',          views.export_tickets_xlsx_view, name='export_xlsx'),
+    path('dashboard/manager/tickets/<int:pk>/export/docx/', views.export_ticket_docx_view, name='export_docx'),
 ]

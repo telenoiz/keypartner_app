@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 
 import os
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, HttpResponse
 
 from .models import Service, News, Project, Role, Notification, Attachment
 from .forms import (
@@ -580,6 +580,160 @@ def attachment_download_view(request, pk):
 
     response = FileResponse(attachment.file.open('rb'), as_attachment=True)
     response['Content-Disposition'] = f'attachment; filename="{attachment.filename}"'
+    return response
+
+
+# ─── Экспорт отчётов (ВКР-046) ──────────────────────────────────────────────
+
+@manager_required
+def export_tickets_xlsx_view(request):
+    """
+    Экспорт всех заявок в .xlsx (F10).
+    Доступно менеджеру и администратору.
+    """
+    import io
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment
+
+    STATUS_LABELS = dict(Project.STATUS_CHOICES)
+    HEADER_COLOR = 'FF2563EB'
+    ROW_ALT_COLOR = 'FFEFF6FF'
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Заявки'
+
+    headers = ['ID', 'Тема', 'Клиент', 'Менеджер', 'Статус', 'Приоритет', 'Услуга', 'Дата создания']
+    header_fill = PatternFill(fgColor=HEADER_COLOR, fill_type='solid')
+    header_font = Font(color='FFFFFFFF', bold=True)
+
+    for col_idx, header_text in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_idx, value=header_text)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    tickets = (
+        Project.objects
+        .select_related('user', 'manager', 'priority', 'service')
+        .order_by('-created_at')
+    )
+
+    for row_idx, ticket in enumerate(tickets, 2):
+        values = [
+            ticket.pk,
+            ticket.title,
+            f'{ticket.user.last_name} {ticket.user.first_name}'.strip() or ticket.user.username,
+            (
+                f'{ticket.manager.last_name} {ticket.manager.first_name}'.strip()
+                if ticket.manager else '—'
+            ),
+            STATUS_LABELS.get(ticket.status, ticket.status),
+            ticket.priority.name if ticket.priority else '—',
+            ticket.service.title if ticket.service else '—',
+            ticket.created_at.strftime('%d.%m.%Y %H:%M'),
+        ]
+        for col_idx, val in enumerate(values, 1):
+            cell = ws.cell(row=row_idx, column=col_idx, value=val)
+            if row_idx % 2 == 0:
+                cell.fill = PatternFill(fgColor=ROW_ALT_COLOR, fill_type='solid')
+
+    # Ширина колонок
+    col_widths = [6, 36, 22, 22, 14, 14, 22, 20]
+    for col_idx, width in enumerate(col_widths, 1):
+        ws.column_dimensions[
+            ws.cell(row=1, column=col_idx).column_letter
+        ].width = width
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="tickets_report.xlsx"'
+    return response
+
+
+@manager_required
+def export_ticket_docx_view(request, pk):
+    """
+    Экспорт карточки заявки в .docx (F10).
+    Содержит реквизиты заявки, описание и историю комментариев.
+    """
+    import io
+    from docx import Document as DocxDocument
+    from docx.shared import Pt, Cm
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+    ticket = get_object_or_404(Project, pk=pk)
+    STATUS_LABELS = dict(Project.STATUS_CHOICES)
+
+    doc = DocxDocument()
+
+    # Шрифт по умолчанию
+    for style in doc.styles:
+        try:
+            style.font.name = 'Times New Roman'
+        except Exception:
+            pass
+
+    # Заголовок
+    heading = doc.add_heading(f'Карточка заявки № {ticket.pk}', level=1)
+    heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    doc.add_paragraph()
+
+    # Таблица реквизитов
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row()
+        row.cells[0].text = label
+        row.cells[0].paragraphs[0].runs[0].bold = True
+        row.cells[1].text = str(value)
+
+    add_row('Тема', ticket.title)
+    add_row('Клиент', ticket.user.get_full_name() or ticket.user.username)
+    manager_name = (
+        ticket.manager.get_full_name() or ticket.manager.username
+        if ticket.manager else 'Не назначен'
+    )
+    add_row('Менеджер', manager_name)
+    add_row('Статус', STATUS_LABELS.get(ticket.status, ticket.status))
+    add_row('Приоритет', ticket.priority.name if ticket.priority else '—')
+    add_row('Услуга', ticket.service.title if ticket.service else '—')
+    add_row('Дата создания', ticket.created_at.strftime('%d.%m.%Y %H:%M'))
+    add_row('Описание', ticket.description or '—')
+
+    # Комментарии
+    comments = ticket.comments.select_related('user').order_by('created_at')
+    if comments.exists():
+        doc.add_paragraph()
+        doc.add_heading('История комментариев', level=2)
+        for comment in comments:
+            author = comment.user.get_full_name() or comment.user.username
+            dt = comment.created_at.strftime('%d.%m.%Y %H:%M')
+            p = doc.add_paragraph()
+            p.add_run(f'{author} ({dt}): ').bold = True
+            p.add_run(comment.text)
+
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer,
+        content_type=(
+            'application/vnd.openxmlformats-officedocument'
+            '.wordprocessingml.document'
+        ),
+    )
+    filename = f'ticket_{ticket.pk}_report.docx'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
 
 

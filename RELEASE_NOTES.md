@@ -2,7 +2,33 @@
 
 ---
 
-## 🚀 Release 0.15 — Файловая система: загрузка и скачивание вложений
+## Release 0.17 — Деплой-конфиг + тест-план
+Дата: 04.06.2026
+
+### Добавлено
+- `render.yaml`: конфиг Render (web-сервис + PostgreSQL free tier)
+- `build.sh`: pip install → collectstatic → migrate → seed roles
+- `runtime.txt`: Python 3.11
+- `keypartner/settings.py`: CSRF_TRUSTED_ORIGINS для .onrender.com
+- `docs/TEST_PLAN.md`: 14 тест-кейсов, 3 баг-репорта
+
+---
+
+## Release 0.16 — Экспорт .xlsx и .docx отчётов
+Дата: 03.06.2026
+
+### Добавлено
+- `core/views.py`: `export_tickets_xlsx_view` (все заявки → .xlsx с цветовым оформлением); `export_ticket_docx_view` (карточка заявки → .docx с таблицей реквизитов и комментариями)
+- `core/urls.py`: `/dashboard/manager/export/xlsx/`, `/dashboard/manager/tickets/<pk>/export/docx/`
+- `manager_dashboard.html`: кнопка «Скачать список (.xlsx)»
+- `manager_ticket_detail.html`: кнопка «Скачать карточку (.docx)»
+- `static/css/style.css`: `.export-bar`, `.ticket-detail__footer`
+
+### TZ_CHECKLIST: критерий #14 закрыт (+3 балла), счёт 52/57
+
+---
+
+## Release 0.15 — Файловая система: загрузка и скачивание вложений
 📅 03.06.2026
 
 ### ✨ Added

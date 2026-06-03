@@ -955,6 +955,21 @@ button { font-family: var(--font-base); }
   width: 100%;
 }
 
+.export-bar {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.ticket-detail__footer {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-6);
+}
+
 /* ─── Форма загрузки файла (ВКР-045) ────────────────────────────────────── */
 .upload-form {
   margin-top: var(--space-4);

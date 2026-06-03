@@ -146,6 +146,9 @@
 
     <footer class="ticket-detail__footer">
       <a href="{% url 'core:manager_dashboard' %}" class="btn btn-outline">← Все заявки</a>
+      <a href="{% url 'core:export_docx' pk=ticket.pk %}" class="btn btn-outline btn-sm">
+        Скачать карточку (.docx)
+      </a>
     </footer>
 
   </div>

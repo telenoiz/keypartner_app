@@ -60,6 +60,13 @@
   {% endif %}
 </form>
 
+{# ── Экспорт (ВКР-046) ───────────────────────────────────────────────────── #}
+<div class="export-bar">
+  <a href="{% url 'core:export_xlsx' %}" class="btn btn-outline btn-sm">
+    Скачать список (.xlsx)
+  </a>
+</div>
+
 {# ── Таблица заявок ──────────────────────────────────────────────────────── #}
 <section aria-labelledby="tickets-heading">
   <h2 id="tickets-heading" class="section-title visually-hidden">Список заявок</h2>
