@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Заявка #{{ ticket.pk }} — Менеджер — Key Partner IT{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item"><a href="{% url 'core:manager_dashboard' %}">Панель менеджера</a></li>
+    <li class="breadcrumb__item" aria-current="page">Заявка #{{ ticket.pk }}</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="manager-detail-layout">
+
+  {# ── Основная колонка ─────────────────────────────────────────────────── #}
+  <div class="manager-detail-main">
+
+    <header class="ticket-detail__header">
+      <div class="ticket-detail__title-row">
+        <h1 class="ticket-detail__title" id="ticket-title">
+          #{{ ticket.pk }} — {{ ticket.title }}
+        </h1>
+        <span class="badge badge--{{ ticket.status }}">{{ ticket.get_status_display }}</span>
+      </div>
+
+      <dl class="ticket-meta">
+        <div class="ticket-meta__item">
+          <dt class="ticket-meta__label">Клиент</dt>
+          <dd class="ticket-meta__value">{{ ticket.user.get_full_name|default:ticket.user.username }}</dd>
+        </div>
+        <div class="ticket-meta__item">
+          <dt class="ticket-meta__label">Услуга</dt>
+          <dd class="ticket-meta__value">{{ ticket.service.title }}</dd>
+        </div>
+        <div class="ticket-meta__item">
+          <dt class="ticket-meta__label">Приоритет</dt>
+          <dd class="ticket-meta__value">{{ ticket.priority }}</dd>
+        </div>
+        <div class="ticket-meta__item">
+          <dt class="ticket-meta__label">Создана</dt>
+          <dd class="ticket-meta__value">
+            <time datetime="{{ ticket.created_at|date:'Y-m-d' }}">{{ ticket.created_at|date:'d.m.Y H:i' }}</time>
+          </dd>
+        </div>
+        <div class="ticket-meta__item">
+          <dt class="ticket-meta__label">Менеджер</dt>
+          <dd class="ticket-meta__value">{{ ticket.manager.username|default:'Не назначен' }}</dd>
+        </div>
+      </dl>
+    </header>
+
+    {% if ticket.description %}
+    <section class="ticket-detail__section" aria-labelledby="desc-heading">
+      <h2 class="ticket-detail__section-title" id="desc-heading">Описание</h2>
+      <div class="ticket-description">{{ ticket.description|linebreaks }}</div>
+    </section>
+    {% endif %}
+
+    {# ── Вложения + загрузка ──────────────────────────────────────────── #}
+    <section class="ticket-detail__section" aria-labelledby="attach-heading">
+      <h2 class="ticket-detail__section-title" id="attach-heading">Вложения</h2>
+      {% if ticket.attachments.all %}
+        <ul class="attachments-list" role="list">
+          {% for att in ticket.attachments.all %}
+          <li class="attachment-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke-width="1.5" stroke="currentColor" width="16" height="16" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/>
+            </svg>
+            <span class="attachment-item__name">{{ att.filename }}</span>
+            <span class="attachment-item__meta">{{ att.file_size|filesizeformat }}</span>
+            {% if att.file %}
+              <a href="{% url 'core:attachment_download' pk=att.pk %}"
+                 class="btn btn-outline btn-sm">Скачать</a>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="ticket-detail__empty">Вложений нет.</p>
+      {% endif %}
+
+      <form method="post"
+            action="{% url 'core:attachment_upload' pk=ticket.pk %}"
+            enctype="multipart/form-data"
+            class="upload-form">
+        {% csrf_token %}
+        <div class="upload-form__row">
+          {{ upload_form.file }}
+          <button type="submit" class="btn btn-outline btn-sm">Прикрепить файл</button>
+        </div>
+        {% for error in upload_form.file.errors %}
+          <p class="form-error">{{ error }}</p>
+        {% endfor %}
+      </form>
+    </section>
+
+    {# ── Комментарии ──────────────────────────────────────────────────── #}
+    <section class="ticket-detail__section" aria-labelledby="comments-heading">
+      <h2 class="ticket-detail__section-title" id="comments-heading">
+        Комментарии {% if ticket.comments.all %}({{ ticket.comments.count }}){% endif %}
+      </h2>
+
+      {% if ticket.comments.all %}
+        <ol class="comments-list" role="list">
+          {% for comment in ticket.comments.all %}
+          <li class="comment-card">
+            <header class="comment-card__header">
+              <span class="comment-card__author">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+              <time class="comment-card__date" datetime="{{ comment.created_at|date:'Y-m-d' }}">
+                {{ comment.created_at|date:'d.m.Y H:i' }}
+              </time>
+            </header>
+            <div class="comment-card__body">{{ comment.text|linebreaks }}</div>
+          </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p class="ticket-detail__empty">Комментариев пока нет.</p>
+      {% endif %}
+
+      <form method="post" class="comment-form" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="comment">
+        <div class="form-group">
+          <label class="form-label" for="{{ comment_form.text.id_for_label }}">
+            Добавить комментарий
+          </label>
+          <textarea class="form-input {% if comment_form.text.errors %}form-input--error{% endif %}"
+                    id="{{ comment_form.text.id_for_label }}"
+                    name="{{ comment_form.text.html_name }}"
+                    rows="3"
+                    placeholder="Введите комментарий…">{{ comment_form.text.value|default:'' }}</textarea>
+          {% for error in comment_form.text.errors %}
+            <p class="form-error" role="alert">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
+      </form>
+    </section>
+
+    <footer class="ticket-detail__footer">
+      <a href="{% url 'core:manager_dashboard' %}" class="btn btn-outline">← Все заявки</a>
+    </footer>
+
+  </div>
+
+  {# ── Боковая панель: смена статуса ────────────────────────────────────── #}
+  <aside class="manager-detail-sidebar">
+    <div class="card manager-status-card">
+      <h2 class="manager-status-card__title">Управление заявкой</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="status">
+        <div class="form-group">
+          <label class="form-label" for="{{ status_form.status.id_for_label }}">Статус</label>
+          {{ status_form.status }}
+        </div>
+        <button type="submit" class="btn btn-primary btn--full">Обновить статус</button>
+      </form>
+    </div>
+  </aside>
+
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Статистика — Менеджер — Key Partner IT{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item"><a href="{% url 'core:manager_dashboard' %}">Панель менеджера</a></li>
+    <li class="breadcrumb__item" aria-current="page">Статистика</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<h1 class="dashboard-title">Статистика по заявкам</h1>
+
+<div class="stats-layout">
+
+  <section class="stats-card" aria-labelledby="status-stats">
+    <h2 class="stats-card__title" id="status-stats">По статусам</h2>
+    <table class="tickets-table">
+      <thead>
+        <tr>
+          <th scope="col">Статус</th>
+          <th scope="col">Количество</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in status_counts %}
+        <tr>
+          <td>
+            <span class="badge badge--{{ row.status }}">
+              {{ status_labels|default_if_none:row.status }}
+              {% for key, val in status_labels.items %}{% if key == row.status %}{{ val }}{% endif %}{% endfor %}
+            </span>
+          </td>
+          <td><strong>{{ row.count }}</strong></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="2" class="ticket-detail__empty">Нет данных</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="stats-card" aria-labelledby="manager-stats">
+    <h2 class="stats-card__title" id="manager-stats">По менеджерам</h2>
+    <table class="tickets-table">
+      <thead>
+        <tr>
+          <th scope="col">Менеджер</th>
+          <th scope="col">Заявок</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in manager_counts %}
+        <tr>
+          <td>
+            {% if row.manager__first_name or row.manager__last_name %}
+              {{ row.manager__first_name }} {{ row.manager__last_name }}
+            {% else %}
+              {{ row.manager__username }}
+            {% endif %}
+          </td>
+          <td><strong>{{ row.count }}</strong></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="2" class="ticket-detail__empty">Нет назначенных заявок</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<div class="ticket-detail__footer">
+  <a href="{% url 'core:manager_dashboard' %}" class="btn btn-outline">← Назад</a>
+</div>
+
+{% endblock %}
