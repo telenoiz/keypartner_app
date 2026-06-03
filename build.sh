@@ -10,10 +10,5 @@ python manage.py collectstatic --no-input
 
 python manage.py migrate
 
-# Создаём роли если ещё не существуют (идемпотентно)
-python manage.py shell -c "
-from core.models import Role
-for name in ('admin', 'manager', 'client'):
-    Role.objects.get_or_create(name=name)
-print('Roles OK')
-"
+# Заполняем справочники и демо-пользователей (идемпотентно)
+python manage.py seed_data
