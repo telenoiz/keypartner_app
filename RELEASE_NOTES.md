@@ -2,6 +2,48 @@
 
 ---
 
+## 🚀 Release 0.15 — Файловая система: загрузка и скачивание вложений
+📅 03.06.2026
+
+### ✨ Added
+- `core/models.py`: `Attachment.file` → `FileField(upload_to='attachments/%Y/%m/')` вместо CharField
+- `core/views.py`: `attachment_upload_view` (@require_POST, проверка прав клиент/менеджер); `attachment_download_view` (FileResponse, as_attachment)
+- `core/urls.py`: `/dashboard/tickets/<pk>/upload/`, `/attachments/<pk>/download/`
+- `keypartner/urls.py`: `static(MEDIA_URL, ...)` для DEBUG-режима
+- `templates/core/ticket_detail.html`: кнопки «Скачать» + форма загрузки для клиента
+- `templates/core/manager_ticket_detail.html`: кнопки «Скачать» + форма загрузки
+- `core/forms.py`: `AttachmentUploadForm` с проверкой размера ≤10 МБ
+
+### 📊 TZ_CHECKLIST: критерий #13 → ✅ (+3 балла)
+
+---
+
+## 🚀 Release 0.14 — ЛК менеджера: детальная заявка + статистика
+📅 03.06.2026
+
+### ✨ Added
+- `core/views.py`: `manager_ticket_detail_view` — POST action='status' (смена статуса, авто-назначение менеджера), POST action='comment' (добавление комментария); `manager_stats_view` — агрегация по статусам и менеджерам
+- `templates/core/manager_ticket_detail.html`: 2-col layout (основная + sidebar со сменой статуса), комментарии, вложения
+- `templates/core/manager_stats.html`: таблицы по статусам и менеджерам
+- `core/forms.py`: `TicketStatusForm`, `CommentForm`
+- `static/css/style.css`: `.manager-detail-layout`, `.manager-status-card`, `.stats-layout`, `.stats-card`
+
+---
+
+## 🚀 Release 0.13 — ЛК менеджера: список всех заявок
+📅 03.06.2026
+
+### ✨ Added
+- `core/views.py`: `manager_required` декоратор (is_manager || is_admin, иначе 403); `manager_dashboard_view` — фильтр по статусу и поиску, пагинация, счётчики
+- `templates/core/manager_dashboard.html`: filter-bar, таблица всех заявок, пагинация, empty state
+- `core/forms.py`: `TicketFilterForm` — status + search
+- `static/css/style.css`: `.filter-bar`, `.search-input`, `.upload-form`
+- `core/urls.py`: `/dashboard/manager/`
+
+### 📊 TZ_CHECKLIST: критерий #17 (ЛК менеджера ≥5 страниц) → ✅ (+5 баллов). Счёт: 41→**49/57**
+
+---
+
 ## 🚀 Release 0.12 — UI-фиксы навигации и feature cards
 📅 02.06.2026
 

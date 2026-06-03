@@ -4,12 +4,15 @@
 ВКР-036: LoginForm, RegisterForm — аутентификация и регистрация.
 ВКР-038: ProjectCreateForm — создание заявки клиентом (F02).
 ВКР-041: ProfileUpdateForm — редактирование профиля пользователя (F01).
+ВКР-043: TicketFilterForm — фильтрация заявок менеджером (F06).
+ВКР-044: TicketStatusForm, CommentForm — смена статуса и комментарий (F07).
+ВКР-045: AttachmentUploadForm — загрузка файла к заявке (F02/F07).
 """
 
 import re
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
-from .models import ContactMessage, Project, Service, Priority
+from .models import ContactMessage, Project, Service, Priority, Comment, Attachment
 
 User = get_user_model()
 
@@ -335,3 +338,92 @@ class ProfileUpdateForm(forms.ModelForm):
         ):
             raise forms.ValidationError(ERR_EMAIL_EXISTS_OTHER)
         return email
+
+
+# ─── Фильтрация заявок менеджером (ВКР-043) ──────────────────────────────────
+
+class TicketFilterForm(forms.Form):
+    """
+    Форма фильтрации заявок для менеджера (F06).
+    Все поля необязательны — пустая форма = показать все.
+    """
+    STATUS_CHOICES_ALL = [('', 'Все статусы')] + Project.STATUS_CHOICES
+
+    status = forms.ChoiceField(
+        choices=STATUS_CHOICES_ALL,
+        required=False,
+        label='Статус',
+        widget=forms.Select(),
+    )
+    search = forms.CharField(
+        required=False,
+        label='Поиск',
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Тема заявки или имя клиента…',
+        }),
+    )
+
+
+# ─── Смена статуса и комментарий (ВКР-044) ───────────────────────────────────
+
+ERR_COMMENT_EMPTY = 'Комментарий не может быть пустым.'
+
+COMMENT_MIN_LENGTH = 2
+
+
+class TicketStatusForm(forms.ModelForm):
+    """
+    Форма смены статуса заявки менеджером (F07).
+    """
+    class Meta:
+        model  = Project
+        fields = ['status']
+        widgets = {'status': forms.Select()}
+        labels  = {'status': 'Новый статус'}
+
+
+class CommentForm(forms.ModelForm):
+    """
+    Форма добавления комментария к заявке (F07, F09).
+    """
+    class Meta:
+        model  = Comment
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'Введите комментарий…',
+            }),
+        }
+        labels = {'text': 'Комментарий'}
+
+    def clean_text(self):
+        text = self.cleaned_data.get('text', '').strip()
+        if len(text) < COMMENT_MIN_LENGTH:
+            raise forms.ValidationError(ERR_COMMENT_EMPTY)
+        return text
+
+
+# ─── Загрузка файла (ВКР-045) ────────────────────────────────────────────────
+
+ATTACHMENT_MAX_SIZE_MB = 10
+ATTACHMENT_MAX_SIZE_BYTES = ATTACHMENT_MAX_SIZE_MB * 1024 * 1024
+ERR_FILE_TOO_LARGE = f'Размер файла не должен превышать {ATTACHMENT_MAX_SIZE_MB} МБ.'
+
+
+class AttachmentUploadForm(forms.Form):
+    """
+    Форма загрузки вложения к заявке (F02/F07).
+    Принимает любой файл до ATTACHMENT_MAX_SIZE_MB МБ.
+    """
+    file = forms.FileField(
+        label='Файл',
+        widget=forms.ClearableFileInput(attrs={'accept': '*/*'}),
+    )
+
+    def clean_file(self):
+        f = self.cleaned_data.get('file')
+        if f and f.size > ATTACHMENT_MAX_SIZE_BYTES:
+            raise forms.ValidationError(ERR_FILE_TOO_LARGE)
+        return f

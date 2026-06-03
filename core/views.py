@@ -12,8 +12,15 @@ from django.urls import reverse
 
 from django.core.paginator import Paginator
 
-from .models import Service, News, Project, Role, Notification
-from .forms import ContactMessageForm, LoginForm, RegisterForm, ProjectCreateForm, ProfileUpdateForm
+import os
+from django.http import FileResponse, Http404
+
+from .models import Service, News, Project, Role, Notification, Attachment
+from .forms import (
+    ContactMessageForm, LoginForm, RegisterForm,
+    ProjectCreateForm, ProfileUpdateForm,
+    TicketFilterForm, TicketStatusForm, CommentForm, AttachmentUploadForm,
+)
 
 # ─── Константы ──────────────────────────────────────────────────────────────
 
@@ -50,6 +57,14 @@ TICKET_NOT_FOUND_MESSAGE = 'Заявка не найдена или недост
 # Профиль и уведомления (ВКР-041)
 PROFILE_UPDATE_SUCCESS  = 'Профиль успешно обновлён.'
 NOTIFICATIONS_PER_PAGE  = 20
+
+# ЛК менеджера (ВКР-043/044)
+MANAGER_TICKETS_PER_PAGE  = 15
+STATUS_UPDATED_MESSAGE    = 'Статус заявки обновлён.'
+COMMENT_ADDED_MESSAGE     = 'Комментарий добавлен.'
+
+# Файловая система (ВКР-045)
+ATTACHMENT_UPLOAD_SUCCESS = 'Файл успешно прикреплён к заявке.'
 
 
 # ─── Публичные страницы ──────────────────────────────────────────────────────
@@ -377,6 +392,195 @@ def notification_mark_read_view(request, pk):
     notification.is_read = True
     notification.save(update_fields=['is_read'])
     return redirect(reverse('core:notifications'))
+
+
+# ─── ЛК Менеджера (ВКР-043/044) ─────────────────────────────────────────────
+
+def manager_required(view_func):
+    """Декоратор: требует роль manager или admin. Иначе → 403."""
+    from functools import wraps
+    from django.http import HttpResponseForbidden
+
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(f'/login/?next={request.path}')
+        if not (request.user.is_manager or request.user.is_admin):
+            return HttpResponseForbidden('Доступ запрещён.')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+@manager_required
+def manager_dashboard_view(request):
+    """
+    Дашборд менеджера — список всех заявок с фильтром по статусу и поиском (F06).
+    """
+    form = TicketFilterForm(request.GET or None)
+    tickets_qs = (
+        Project.objects
+        .select_related('user', 'service', 'priority', 'manager')
+        .order_by('-created_at')
+    )
+
+    if form.is_valid():
+        status = form.cleaned_data.get('status')
+        search = form.cleaned_data.get('search', '').strip()
+        if status:
+            tickets_qs = tickets_qs.filter(status=status)
+        if search:
+            tickets_qs = tickets_qs.filter(title__icontains=search)
+
+    # Счётчики по статусам
+    stats = {
+        'new':         tickets_qs.filter(status=Project.STATUS_NEW).count(),
+        'in_progress': tickets_qs.filter(status=Project.STATUS_IN_PROGRESS).count(),
+        'resolved':    tickets_qs.filter(
+                           status__in=[Project.STATUS_RESOLVED, Project.STATUS_CLOSED]
+                       ).count(),
+        'total':       tickets_qs.count(),
+    }
+
+    paginator = Paginator(tickets_qs, MANAGER_TICKETS_PER_PAGE)
+    page_obj  = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'core/manager_dashboard.html', {
+        'page_obj': page_obj,
+        'stats':    stats,
+        'form':     form,
+    })
+
+
+@manager_required
+def manager_ticket_detail_view(request, pk):
+    """
+    Детальная заявка менеджера (F07): смена статуса + добавление комментария.
+    POST с action='status' — меняет статус.
+    POST с action='comment' — добавляет комментарий.
+    """
+    ticket = get_object_or_404(
+        Project.objects
+        .select_related('user', 'service', 'priority', 'manager')
+        .prefetch_related('comments__user', 'attachments'),
+        pk=pk,
+    )
+
+    status_form  = TicketStatusForm(instance=ticket)
+    comment_form = CommentForm()
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'status':
+            status_form = TicketStatusForm(request.POST, instance=ticket)
+            if status_form.is_valid():
+                status_form.save()
+                # Назначаем менеджера если ещё не назначен
+                if not ticket.manager:
+                    ticket.manager = request.user
+                    ticket.save(update_fields=['manager'])
+                messages.success(request, STATUS_UPDATED_MESSAGE)
+                return redirect(reverse('core:manager_ticket_detail', kwargs={'pk': pk}))
+
+        elif action == 'comment':
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.project = ticket
+                comment.user    = request.user
+                comment.save()
+                messages.success(request, COMMENT_ADDED_MESSAGE)
+                return redirect(reverse('core:manager_ticket_detail', kwargs={'pk': pk}))
+
+    return render(request, 'core/manager_ticket_detail.html', {
+        'ticket':       ticket,
+        'status_form':  status_form,
+        'comment_form': comment_form,
+        'upload_form':  AttachmentUploadForm(),
+    })
+
+
+@manager_required
+def manager_stats_view(request):
+    """
+    Статистика по заявкам для менеджера (F13).
+    """
+    from django.db.models import Count
+
+    status_counts = (
+        Project.objects
+        .values('status')
+        .annotate(count=Count('id'))
+        .order_by('status')
+    )
+    manager_counts = (
+        Project.objects
+        .filter(manager__isnull=False)
+        .values('manager__username', 'manager__first_name', 'manager__last_name')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+
+    return render(request, 'core/manager_stats.html', {
+        'status_counts':  status_counts,
+        'manager_counts': manager_counts,
+        'status_labels':  dict(Project.STATUS_CHOICES),
+    })
+
+
+# ─── Файловая система (ВКР-045) ───────────────────────────────────────────────
+
+@login_required
+@require_POST
+def attachment_upload_view(request, pk):
+    """
+    Загрузка файла к заявке (F02/F07).
+    Клиент — только к своей заявке. Менеджер/admin — к любой.
+    """
+    if request.user.is_manager or request.user.is_admin:
+        ticket = get_object_or_404(Project, pk=pk)
+    else:
+        ticket = get_object_or_404(Project, pk=pk, user=request.user)
+
+    form = AttachmentUploadForm(request.POST, request.FILES)
+    if form.is_valid():
+        uploaded = form.cleaned_data['file']
+        attachment = Attachment(
+            project   = ticket,
+            filename  = uploaded.name,
+            file      = uploaded,
+            file_type = uploaded.content_type or '',
+            file_size = uploaded.size,
+        )
+        attachment.save()
+        messages.success(request, ATTACHMENT_UPLOAD_SUCCESS)
+
+    # Редиректим обратно на страницу заявки (клиент или менеджер)
+    if request.user.is_manager or request.user.is_admin:
+        return redirect(reverse('core:manager_ticket_detail', kwargs={'pk': pk}))
+    return redirect(reverse('core:ticket_detail', kwargs={'pk': pk}))
+
+
+@login_required
+def attachment_download_view(request, pk):
+    """
+    Скачивание файла вложения (F02/F07).
+    Клиент — только вложения своих заявок.
+    Менеджер/admin — любые вложения.
+    """
+    attachment = get_object_or_404(Attachment.objects.select_related('project__user'), pk=pk)
+
+    # Проверка доступа
+    if not (request.user.is_manager or request.user.is_admin):
+        if attachment.project.user != request.user:
+            raise Http404
+
+    if not attachment.file:
+        raise Http404
+
+    response = FileResponse(attachment.file.open('rb'), as_attachment=True)
+    response['Content-Disposition'] = f'attachment; filename="{attachment.filename}"'
+    return response
 
 
 # ─── Обработчики ошибок (ВКР-036) ───────────────────────────────────────────

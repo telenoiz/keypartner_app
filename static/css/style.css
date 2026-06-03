@@ -910,6 +910,88 @@ button { font-family: var(--font-base); }
   flex-wrap: wrap;
 }
 
+/* ─── Менеджер: детальная заявка layout (ВКР-044) ───────────────────────── */
+.manager-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .manager-detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.manager-status-card {
+  padding: var(--space-5);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  position: sticky;
+  top: 80px;
+}
+
+.manager-status-card__title {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-4);
+}
+
+/* ─── Фильтр-бар менеджера (ВКР-043) ────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.filter-bar__search { flex: 1; min-width: 200px; }
+.filter-bar__status { min-width: 160px; }
+
+.search-input {
+  width: 100%;
+}
+
+/* ─── Форма загрузки файла (ВКР-045) ────────────────────────────────────── */
+.upload-form {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-neutral-100);
+}
+
+.upload-form__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ─── Статистика менеджера (ВКР-044) ────────────────────────────────────── */
+.stats-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.stats-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.stats-card__title {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  padding: var(--space-4) var(--space-4) 0;
+  margin-bottom: var(--space-3);
+}
+
 /* ─── Профиль пользователя (ВКР-041) ────────────────────────────────────── */
 .profile-layout {
   display: grid;

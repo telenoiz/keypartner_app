@@ -30,6 +30,15 @@ urlpatterns = [
     path('dashboard/notifications/',              views.notifications_view,          name='notifications'),
     path('dashboard/notifications/<int:pk>/read/', views.notification_mark_read_view, name='notification_read'),
 
+    # ЛК Менеджера (ВКР-043/044)
+    path('dashboard/manager/',                       views.manager_dashboard_view,      name='manager_dashboard'),
+    path('dashboard/manager/tickets/<int:pk>/',      views.manager_ticket_detail_view,  name='manager_ticket_detail'),
+    path('dashboard/manager/stats/',                 views.manager_stats_view,          name='manager_stats'),
+
+    # Файловая система (ВКР-045)
+    path('dashboard/tickets/<int:pk>/upload/',       views.attachment_upload_view,      name='attachment_upload'),
+    path('attachments/<int:pk>/download/',           views.attachment_download_view,    name='attachment_download'),
+
     # Статические публичные страницы (ВКР-037)
     path('about/',   views.about_view,   name='about'),
     path('sitemap/', views.sitemap_view, name='sitemap'),

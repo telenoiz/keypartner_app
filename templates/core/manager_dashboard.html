@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Панель менеджера — Key Partner IT{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item"><a href="{% url 'core:home' %}">Главная</a></li>
+    <li class="breadcrumb__item" aria-current="page">Панель менеджера</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+  <div>
+    <h1 class="dashboard-title">Панель менеджера</h1>
+    <p class="dashboard-subtitle">Все заявки клиентов</p>
+  </div>
+  <a href="{% url 'core:manager_stats' %}" class="btn btn-outline">Статистика</a>
+</div>
+
+{# ── Счётчики ────────────────────────────────────────────────────────────── #}
+<section class="dashboard-stats" aria-label="Статистика заявок">
+  <div class="stat-card">
+    <span class="stat-card__value">{{ stats.total }}</span>
+    <span class="stat-card__label">Всего заявок</span>
+  </div>
+  <div class="stat-card stat-card--new">
+    <span class="stat-card__value">{{ stats.new }}</span>
+    <span class="stat-card__label">Новых</span>
+  </div>
+  <div class="stat-card stat-card--progress">
+    <span class="stat-card__value">{{ stats.in_progress }}</span>
+    <span class="stat-card__label">В работе</span>
+  </div>
+  <div class="stat-card stat-card--resolved">
+    <span class="stat-card__value">{{ stats.resolved }}</span>
+    <span class="stat-card__label">Завершено</span>
+  </div>
+</section>
+
+{# ── Фильтр ──────────────────────────────────────────────────────────────── #}
+<form method="get" class="filter-bar" role="search">
+  <div class="filter-bar__search">
+    <input class="form-input search-input"
+           type="text"
+           name="search"
+           value="{{ form.search.value|default:'' }}"
+           placeholder="Поиск по теме или клиенту…"
+           aria-label="Поиск заявок">
+  </div>
+  <div class="filter-bar__status">
+    {{ form.status }}
+  </div>
+  <button type="submit" class="btn btn-primary">Найти</button>
+  {% if request.GET.search or request.GET.status %}
+    <a href="{% url 'core:manager_dashboard' %}" class="btn btn-outline">Сбросить</a>
+  {% endif %}
+</form>
+
+{# ── Таблица заявок ──────────────────────────────────────────────────────── #}
+<section aria-labelledby="tickets-heading">
+  <h2 id="tickets-heading" class="section-title visually-hidden">Список заявок</h2>
+
+  {% if page_obj.object_list %}
+    <div class="tickets-table-wrap">
+      <table class="tickets-table" role="grid">
+        <thead>
+          <tr>
+            <th scope="col">№</th>
+            <th scope="col">Тема</th>
+            <th scope="col">Клиент</th>
+            <th scope="col">Услуга</th>
+            <th scope="col">Приоритет</th>
+            <th scope="col">Статус</th>
+            <th scope="col">Менеджер</th>
+            <th scope="col">Дата</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in page_obj %}
+          <tr class="ticket-row">
+            <td class="ticket-row__id">
+              <a href="{% url 'core:manager_ticket_detail' pk=ticket.pk %}">#{{ ticket.pk }}</a>
+            </td>
+            <td class="ticket-row__title">
+              <a href="{% url 'core:manager_ticket_detail' pk=ticket.pk %}" class="ticket-row__link">
+                {{ ticket.title }}
+              </a>
+            </td>
+            <td>{{ ticket.user.get_full_name|default:ticket.user.username }}</td>
+            <td>{{ ticket.service.title }}</td>
+            <td>{{ ticket.priority }}</td>
+            <td>
+              <span class="badge badge--{{ ticket.status }}">
+                {{ ticket.get_status_display }}
+              </span>
+            </td>
+            <td>{{ ticket.manager.username|default:'—' }}</td>
+            <td class="ticket-row__date">
+              <time datetime="{{ ticket.created_at|date:'Y-m-d' }}">
+                {{ ticket.created_at|date:'d.m.Y' }}
+              </time>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination" aria-label="Навигация по страницам">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&search={{ request.GET.search }}&status={{ request.GET.status }}"
+           class="pagination__link">← Назад</a>
+      {% endif %}
+      <span class="pagination__info">
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+      </span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&search={{ request.GET.search }}&status={{ request.GET.status }}"
+           class="pagination__link">Вперёд →</a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+  {% else %}
+    <div class="empty-state" role="status">
+      <p class="empty-state__title">Заявок не найдено</p>
+      <p class="empty-state__text">Попробуйте изменить фильтры или дождитесь новых заявок от клиентов.</p>
+    </div>
+  {% endif %}
+
+</section>
+{% endblock %}
