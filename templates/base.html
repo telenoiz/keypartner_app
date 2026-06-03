@@ -36,8 +36,17 @@
         <span class="logo-text">Key Partner IT</span>
       </a>
 
+      <!-- Бургер-кнопка (мобильная) -->
+      <button class="nav-burger" id="nav-burger"
+              aria-label="Открыть меню" aria-expanded="false"
+              aria-controls="main-nav">
+        <span class="nav-burger__line"></span>
+        <span class="nav-burger__line"></span>
+        <span class="nav-burger__line"></span>
+      </button>
+
       <!-- Основная навигация -->
-      <nav class="site-nav" aria-label="Основная навигация">
+      <nav class="site-nav" id="main-nav" aria-label="Основная навигация">
         <ul class="nav-list">
           <li>
             <a href="{% url 'core:home' %}"
@@ -191,6 +200,30 @@
 
     btn.addEventListener('click', function () {
       setAccessible(!body.classList.contains('accessible'));
+    });
+  }());
+  </script>
+
+  <!-- ─── Бургер-меню (мобильное) ──────────────────────────────────────── -->
+  <script>
+  (function () {
+    var burger = document.getElementById('nav-burger');
+    var nav    = document.getElementById('main-nav');
+    if (!burger || !nav) return;
+
+    burger.addEventListener('click', function () {
+      var open = nav.classList.toggle('site-nav--open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.classList.toggle('nav-burger--open', open);
+    });
+
+    // Закрывать меню при клике на ссылку
+    nav.querySelectorAll('.nav-link').forEach(function (link) {
+      link.addEventListener('click', function () {
+        nav.classList.remove('site-nav--open');
+        burger.setAttribute('aria-expanded', 'false');
+        burger.classList.remove('nav-burger--open');
+      });
     });
   }());
   </script>

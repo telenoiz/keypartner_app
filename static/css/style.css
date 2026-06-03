@@ -1791,3 +1791,183 @@ button { font-family: var(--font-base); }
   color: var(--badge-cancelled-text);
   background-color: var(--badge-cancelled-bg);
 }
+
+/* ─── Глобальный фикс горизонтального скролла ────────────────────────────── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Таблицы на мобильных — горизонтальный скролл внутри контейнера */
+.tickets-table,
+.stats-table,
+table {
+  width: 100%;
+  min-width: 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── Бургер-кнопка ──────────────────────────────────────────────────────── */
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: 1.5px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.nav-burger__line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--color-neutral-700);
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Крестик при открытом меню */
+.nav-burger--open .nav-burger__line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-burger--open .nav-burger__line:nth-child(2) {
+  opacity: 0;
+}
+.nav-burger--open .nav-burger__line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ─── Мобильная адаптация (≤ 768px) ─────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Шапка */
+  .site-header .container {
+    flex-wrap: wrap;
+    height: auto;
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .site-logo {
+    flex: 1;
+  }
+
+  /* Показываем бургер */
+  .nav-burger {
+    display: flex;
+    order: 2;
+  }
+
+  /* Прячем site-actions на мобиле — они войдут в меню */
+  .site-actions {
+    display: none;
+    width: 100%;
+    order: 4;
+    padding: var(--space-3) 0 var(--space-2);
+    border-top: 1px solid var(--color-neutral-200);
+  }
+
+  /* Навигация — скрыта по умолчанию, разворачивается бургером */
+  .site-nav {
+    display: none;
+    width: 100%;
+    order: 3;
+  }
+
+  .site-nav--open {
+    display: block;
+  }
+
+  .site-nav--open ~ .site-actions {
+    display: flex;
+  }
+
+  .nav-list {
+    flex-direction: column;
+    gap: 0;
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--color-neutral-200);
+  }
+
+  .nav-link {
+    display: block;
+    padding: var(--space-3) var(--space-2);
+    font-size: var(--text-body);
+    border-radius: 0;
+    border-bottom: 1px solid var(--color-neutral-100);
+  }
+
+  /* Hero */
+  .page-hero {
+    padding: var(--space-8) 0 var(--space-6);
+  }
+
+  .page-hero__title {
+    font-size: var(--text-h2);
+  }
+
+  /* Контентные сетки */
+  .services-grid,
+  .projects-grid,
+  .news-grid,
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Таблицы — обёртка с горизонтальным скроллом */
+  .tickets-table,
+  .stats-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: var(--text-small);
+  }
+
+  /* Dashboard stat-cards — 2 в ряд */
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Менеджер detail — одна колонка */
+  .manager-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Auth-карточки */
+  .auth-card {
+    margin: var(--space-6) var(--space-4);
+    padding: var(--space-6) var(--space-4);
+  }
+
+  /* Хлебные крошки — не переполняются */
+  .breadcrumb {
+    flex-wrap: wrap;
+  }
+
+  /* Footer */
+  .site-footer .container {
+    text-align: center;
+  }
+
+  /* Кнопки экспорта — в колонку */
+  .export-bar {
+    flex-direction: column;
+  }
+
+  .ticket-detail__footer {
+    flex-direction: column;
+  }
+}
