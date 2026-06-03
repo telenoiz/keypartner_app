@@ -91,13 +91,94 @@ Phase 3 — Код
 
 | Неделя | Период | Статус |
 |---|---|---|
-| Неделя 1 | 11–17 мая | ✅ Анализ предметной области |
-| Неделя 2 | 18–24 мая | ✅ Проектирование (ER, SQL, дизайн) |
-| Неделя 3 | 25–31 мая | ✅ Разработка (Django, 10 публ. страниц, ЛК клиент начат) |
-| Неделя 4 | 1–7 июня | 🔄 ЛК завершение, деплой, тесты, отчёт |
+| Неделя 1 | 11–17 мая | готово — Анализ предметной области |
+| Неделя 2 | 18–24 мая | готово — Проектирование (ER, SQL, дизайн) |
+| Неделя 3 | 25–31 мая | готово — Django, 10 публ. страниц, ЛК клиент |
+| Неделя 4 | 1–7 июня | в работе — ЛК менеджер, экспорт, деплой |
 
-**Коммитов:** 39 / 50 (нужно ≥11 до 05.06)
-**Баллов:** 36 / 57
+**Коммитов:** 47 / 50 — после пуша ВКР-046 и ВКР-047 сегодня (03.06)
+**Баллов:** 52 / 57
+
+---
+
+## Что запушить сегодня (03.06, среда)
+
+Команды готовы — скопировать и выполнить в терминале:
+
+```bash
+cd /Users/displayboy/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents/Vault/01_PROJECTS/MUIV_Practice_2026/keypartner_app
+
+git add core/views.py core/urls.py \
+        templates/core/manager_dashboard.html \
+        templates/core/manager_ticket_detail.html \
+        static/css/style.css RELEASE_NOTES.md \
+        docs/DevLog_ВКР-046_2026-06-03.md \
+        docs/TZ_CHECKLIST.md
+git commit -m "ВКР-046: экспорт заявок в .xlsx и .docx
+- export_tickets_xlsx_view: все заявки → .xlsx
+- export_ticket_docx_view: карточка заявки → .docx
+- manager_dashboard: кнопка Скачать список (.xlsx)
+- manager_ticket_detail: кнопка Скачать карточку (.docx)
+- CSS: .export-bar, .ticket-detail__footer"
+
+git add render.yaml build.sh runtime.txt \
+        keypartner/settings.py \
+        docs/TEST_PLAN.md \
+        RELEASE_NOTES.md \
+        docs/DevLog_ВКР-047_2026-06-04.md
+git commit -m "ВКР-047: деплой-конфиг Render + тест-план
+- render.yaml: web-сервис + PostgreSQL free tier
+- build.sh: install → collectstatic → migrate → seed roles
+- runtime.txt: Python 3.11
+- settings.py: CSRF_TRUSTED_ORIGINS
+- docs/TEST_PLAN.md: 14 тест-кейсов, 3 баг-репорта"
+
+git push
+```
+
+---
+
+## Что делать в четверг 04.06
+
+1. **Деплой на Render** — render.com → New → Blueprint → подключить репозиторий GitFlic
+2. После деплоя добавить env: `CSRF_TRUSTED_ORIGINS=https://<имя>.onrender.com`
+3. В Shell на Render: `python manage.py createsuperuser`
+4. Создать тестовые данные через /admin/: 3 пользователя (admin/manager/client), услуги, приоритеты
+5. **ВКР-048**: дамп БД → `docs/db_dump.sql`
+
+```bash
+# Команда для дампа (credentials взять из Render Dashboard → DB → Connection)
+pg_dump "postgresql://keypartner:<pass>@<host>/keypartner_db" > docs/db_dump.sql
+git add docs/db_dump.sql README.md
+git commit -m "ВКР-048: дамп PostgreSQL + ссылка на сайт в README"
+git push
+```
+
+---
+
+## Что делать в пятницу 05.06
+
+1. Сделать скриншоты всех 10 публичных страниц + ЛК клиента + ЛК менеджера
+2. Сохранить в `docs/screenshots/` (имена: `01_home.png`, `02_about.png`, ...)
+3. Вставить скриншоты в отчёт на места `⟨СКРИН: ...⟩`
+4. Вставить URL сайта в раздел 1.1 отчёта
+5. **ВКР-049**: скриншоты в репозиторий
+
+```bash
+git add docs/screenshots/ docs/MoC_Project.md
+git commit -m "ВКР-049: скриншоты интерфейса + обновлён MoC"
+git push
+```
+
+6. **ВКР-050**: финальный README
+
+```bash
+git add README.md RELEASE_NOTES.md
+git commit -m "ВКР-050: финальный README — ссылка на сайт, итоги недели 4"
+git push
+```
+
+После этого: **50 коммитов**, сайт работает, отчёт готов к сдаче в ЭИОС.
 
 ---
 
@@ -105,16 +186,16 @@ Phase 3 — Код
 
 | Требование | Статус |
 |---|---|
-| ≥10 страниц (неавторизованный) | ✅ |
-| Макет каждой страницы | 📅 скриншоты после деплоя |
-| ≥10 пунктов меню + breadcrumbs | ✅ |
-| БД ≥10 таблиц, PostgreSQL | ✅ |
-| Дамп БД в репозитории | 📅 |
-| ≥3 роли | ✅ |
-| Панель администратора ≥5 страниц | 🔄 Django admin есть, кастом — нет |
-| Личный кабинет ≥5 страниц | 🔄 2/5 готово |
-| Доступ к файловой системе | 📅 |
-| Формирование .docx / .xlsx | 📅 |
-| ≥2000 строк кода | 🔄 проверить |
-| ≥50 коммитов | 🔄 39/50 |
-| Сайт на хостинге | 📅 |
+| ≥10 страниц (неавторизованный) | готово (ВКР-037) |
+| Макет каждой страницы | скриншоты после деплоя (пятница) |
+| ≥10 пунктов меню + breadcrumbs | готово (ВКР-037) |
+| БД ≥10 таблиц, PostgreSQL | готово — 14 таблиц (ВКР-029) |
+| Дамп БД в репозитории | четверг после деплоя |
+| ≥3 роли | готово — admin/manager/client (ВКР-029) |
+| Панель администратора ≥5 страниц | готово — Django admin, 14 моделей (ВКР-028) |
+| Личный кабинет ≥5 страниц | готово — 5 клиент + 5 менеджер (ВКР-041/044) |
+| Доступ к файловой системе | готово (ВКР-045) |
+| Формирование .docx / .xlsx | готово (ВКР-046) |
+| ≥2000 строк кода | в работе — проверить: grep -v '^\s*$' **/*.py \| wc -l |
+| ≥50 коммитов | 47/50 — осталось 3 (чт-пт) |
+| Сайт на хостинге | четверг |
