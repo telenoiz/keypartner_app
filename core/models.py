@@ -348,15 +348,19 @@ class Comment(models.Model):
 
 
 class Attachment(models.Model):
-    """Вложения к заявке (F02, F07)"""
+    """Вложения к заявке (F02, F07) — ВКР-045: file → FileField"""
     project   = models.ForeignKey(
                     Project, on_delete=models.CASCADE,
                     related_name='attachments', verbose_name='Заявка'
                 )
     filename  = models.CharField(max_length=255, verbose_name='Имя файла')
-    file_path = models.CharField(max_length=500, verbose_name='Путь к файлу')
-    file_type = models.CharField(max_length=50, verbose_name='Тип файла')
-    file_size = models.IntegerField(verbose_name='Размер (байт)')
+    file      = models.FileField(
+                    upload_to='attachments/%Y/%m/',
+                    verbose_name='Файл',
+                    null=True, blank=True,
+                )
+    file_type = models.CharField(max_length=50, blank=True, verbose_name='Тип файла')
+    file_size = models.IntegerField(default=0, verbose_name='Размер (байт)')
 
     class Meta:
         db_table = 'attachment'
