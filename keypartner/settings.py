@@ -58,17 +58,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'keypartner.wsgi.application'
 
-# ─── База данных (PostgreSQL) ────────────────────────────────────────────────
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='keypartner_db'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+# ─── База данных ─────────────────────────────────────────────────────────────
+_db_engine = config('DB_ENGINE', default='django.db.backends.sqlite3')
+
+if _db_engine == 'django.db.backends.sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': _db_engine,
+            'NAME': config('DB_NAME', default='keypartner_db'),
+            'USER': config('DB_USER', default='postgres'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='5432'),
+        }
+    }
 
 # ─── Модель пользователя ─────────────────────────────────────────────────────
 AUTH_USER_MODEL = 'core.User'
@@ -102,6 +112,13 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ─── Продакшен (Render) ───────────────────────────────────────────────────────
+# CSRF_TRUSTED_ORIGINS обязателен при DEBUG=False и https-хосте
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://127.0.0.1,http://localhost',
+).split(',')
 
 # ─── Метаданные сайта (ТЗ §9) ────────────────────────────────────────────────
 # ФИО автора ВКР — отображается в подвале (требование ТЗ §9 «ФИО в подвале»)
