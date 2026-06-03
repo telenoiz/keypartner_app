@@ -1812,6 +1812,7 @@ table {
 }
 
 /* ─── Бургер-кнопка ──────────────────────────────────────────────────────── */
+/* Бургер — скрыт по умолчанию (десктоп) */
 .nav-burger {
   display: none;
   flex-direction: column;
@@ -1820,20 +1821,19 @@ table {
   gap: 5px;
   width: 40px;
   height: 40px;
-  background: none;
-  border: 1.5px solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 6px;
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
-  margin-left: auto;
 }
 
 .nav-burger__line {
   display: block;
   width: 20px;
   height: 2px;
-  background: var(--color-neutral-700);
+  background: #374151;
   border-radius: 2px;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
@@ -1852,62 +1852,68 @@ table {
 /* ─── Мобильная адаптация (≤ 768px) ─────────────────────────────────────── */
 @media (max-width: 768px) {
 
-  /* Шапка */
+  /* Шапка — фиксированная высота, лого + бургер в ряд */
+  .site-header {
+    position: relative; /* нужно для absolute-dropdown */
+  }
+
   .site-header .container {
-    flex-wrap: wrap;
-    height: auto;
-    padding-top: var(--space-3);
-    padding-bottom: var(--space-3);
-    gap: var(--space-3);
+    height: 56px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
   }
 
   .site-logo {
     flex: 1;
   }
 
+  /* Прячем auth-кнопки в шапке на мобиле */
+  .site-actions {
+    display: none;
+  }
+
   /* Показываем бургер */
   .nav-burger {
     display: flex;
-    order: 2;
   }
 
-  /* Прячем site-actions на мобиле — они войдут в меню */
-  .site-actions {
-    display: none;
-    width: 100%;
-    order: 4;
-    padding: var(--space-3) 0 var(--space-2);
-    border-top: 1px solid var(--color-neutral-200);
-  }
-
-  /* Навигация — скрыта по умолчанию, разворачивается бургером */
+  /* Навигация — скрыта, выпадает вниз абсолютно */
   .site-nav {
     display: none;
-    width: 100%;
-    order: 3;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 2px solid #e5e7eb;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    z-index: 200;
   }
 
   .site-nav--open {
     display: block;
   }
 
-  .site-nav--open ~ .site-actions {
-    display: flex;
-  }
-
   .nav-list {
     flex-direction: column;
     gap: 0;
-    padding: var(--space-2) 0;
-    border-top: 1px solid var(--color-neutral-200);
+    padding: 0;
   }
 
   .nav-link {
     display: block;
-    padding: var(--space-3) var(--space-2);
-    font-size: var(--text-body);
+    padding: 14px 20px;
+    font-size: 16px;
     border-radius: 0;
-    border-bottom: 1px solid var(--color-neutral-100);
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
+  }
+
+  .nav-link--active {
+    color: #2563eb;
+    background: #eff6ff;
   }
 
   /* Hero */
