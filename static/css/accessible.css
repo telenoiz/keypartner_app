@@ -78,6 +78,44 @@ body.accessible .site-header {
   box-shadow: none;
 }
 
+/* Flex-контейнер шапки: логотип + actions на строке 1, nav на строке 2 */
+body.accessible .site-header .container {
+  height: auto;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  padding-block: 10px;
+  align-items: center;
+}
+
+/* Логотип — строка 1, левый край */
+body.accessible .site-logo {
+  order: 1;
+  flex-shrink: 0;
+}
+
+/* Кнопки + глаз — строка 1, правый край */
+body.accessible .site-actions {
+  order: 2;
+  margin-left: auto;
+  gap: var(--space-2);
+}
+
+/* Навигация — строка 2, вся ширина */
+body.accessible .site-nav {
+  order: 3;
+  flex: 0 0 100%;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-top: 1px solid #333333;
+  padding-top: 8px;
+}
+
+body.accessible .nav-link {
+  white-space: nowrap;
+  font-size: 14px;
+  padding: 4px 10px;
+}
+
 body.accessible .logo-text {
   color: #FFD700;
 }
