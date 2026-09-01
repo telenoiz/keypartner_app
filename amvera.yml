@@ -1,0 +1,17 @@
+meta:
+  environment: python
+  toolchain:
+    name: pip
+    version: "3.11"
+
+build:
+  requirementsPath: requirements.txt
+
+run:
+  command: >
+    python3 manage.py migrate --noinput &&
+    python3 manage.py collectstatic --noinput &&
+    python3 manage.py seed_data &&
+    gunicorn --bind 0.0.0.0:5000 keypartner.wsgi:application
+  containerPort: 5000
+  persistenceMount: /data

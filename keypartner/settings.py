@@ -3,10 +3,14 @@ Django settings for keypartner project.
 Веб-сервис централизованного управления заявками — ООО «Ки Партнер ИТ»
 """
 
+import os
 from pathlib import Path
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Amvera (российский PaaS) автоматически выставляет эту переменную
+AMVERA = os.getenv('AMVERA') == 'true'
 
 # ─── Безопасность ───────────────────────────────────────────────────────────
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
@@ -61,7 +65,17 @@ WSGI_APPLICATION = 'keypartner.wsgi.application'
 # ─── База данных ─────────────────────────────────────────────────────────────
 _db_engine = config('DB_ENGINE', default='django.db.backends.sqlite3')
 
-if _db_engine == 'django.db.backends.sqlite3':
+if AMVERA:
+    # Amvera: постоянное хранилище, чтобы БД не пропадала между рестартами
+    DATA_DIR = Path(os.getenv('DATA_DIR', '/data'))
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': DATA_DIR / 'keypartner.sqlite3',
+        }
+    }
+elif _db_engine == 'django.db.backends.sqlite3':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -101,7 +115,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
