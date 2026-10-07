@@ -261,6 +261,40 @@ def logout_view(request):
     return redirect('core:login')
 
 
+# ─── Уведомления: генерация событий (F04) ───────────────────────────────────
+
+def notify_user(user, message, project=None):
+    """
+    Создаёт внутрисистемное уведомление пользователю.
+    Сбой при создании уведомления не должен ломать основное действие,
+    поэтому исключения подавляются.
+    """
+    try:
+        Notification.objects.create(user=user, project=project, message=message)
+    except Exception:
+        pass
+
+
+def notify_managers(message, project=None, exclude=None):
+    """
+    Создаёт уведомление всем менеджерам и администраторам.
+    exclude — пользователь, которого уведомлять не нужно (автор действия).
+    """
+    try:
+        from django.contrib.auth import get_user_model
+        recipients = get_user_model().objects.filter(
+            role__name__in=['manager', 'admin']
+        )
+        if exclude is not None:
+            recipients = recipients.exclude(pk=exclude.pk)
+        Notification.objects.bulk_create([
+            Notification(user=u, project=project, message=message)
+            for u in recipients
+        ])
+    except Exception:
+        pass
+
+
 # ─── Личный кабинет (F02–F10) ───────────────────────────────────────────────
 
 @login_required
@@ -310,6 +344,12 @@ def ticket_create_view(request):
             ticket.user   = request.user
             ticket.status = Project.STATUS_NEW
             ticket.save()
+            # Уведомление менеджерам о новой заявке (F04)
+            notify_managers(
+                f'Новая заявка «{ticket.title}» от {ticket.user.username}.',
+                ticket,
+                exclude=request.user,
+            )
             messages.success(request, TICKET_CREATE_SUCCESS_MESSAGE)
             return redirect(reverse('core:dashboard'))
         return render(request, 'core/ticket_create.html', {'form': form})
@@ -472,6 +512,7 @@ def manager_ticket_detail_view(request, pk):
         action = request.POST.get('action')
 
         if action == 'status':
+            old_status = ticket.status
             status_form = TicketStatusForm(request.POST, instance=ticket)
             if status_form.is_valid():
                 status_form.save()
@@ -479,6 +520,14 @@ def manager_ticket_detail_view(request, pk):
                 if not ticket.manager:
                     ticket.manager = request.user
                     ticket.save(update_fields=['manager'])
+                # Уведомление клиенту о смене статуса (F04)
+                if ticket.status != old_status:
+                    notify_user(
+                        ticket.user,
+                        f'Статус заявки «{ticket.title}» изменён на '
+                        f'«{ticket.get_status_display()}».',
+                        ticket,
+                    )
                 messages.success(request, STATUS_UPDATED_MESSAGE)
                 return redirect(reverse('core:manager_ticket_detail', kwargs={'pk': pk}))
 
@@ -489,6 +538,12 @@ def manager_ticket_detail_view(request, pk):
                 comment.project = ticket
                 comment.user    = request.user
                 comment.save()
+                # Уведомление клиенту о новом комментарии (F04)
+                notify_user(
+                    ticket.user,
+                    f'Новый комментарий по заявке «{ticket.title}».',
+                    ticket,
+                )
                 messages.success(request, COMMENT_ADDED_MESSAGE)
                 return redirect(reverse('core:manager_ticket_detail', kwargs={'pk': pk}))
 
